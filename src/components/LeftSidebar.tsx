@@ -43,15 +43,15 @@ export default function LeftSidebar() {
       className="fixed left-6 top-1/2 -translate-y-1/2 z-50"
     >
       <div 
-        className="backdrop-blur-lg bg-[#E8E3D9]/80 rounded-2xl shadow-2xl border border-white/20 p-4 flex flex-col gap-3"
+        className="backdrop-blur-lg bg-white/90 rounded-2xl shadow-2xl border border-white/40 p-4 flex flex-col gap-2.5"
         style={{ 
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)' 
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), 4px 4px 0px rgba(0, 0, 0, 0.1)' 
         }}
       >
         {/* Logo */}
         <motion.div
           whileHover={{ scale: 1.1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          transition={{ duration: 0.15 }}
           className="relative"
           onMouseEnter={() => setHoveredItem('logo')}
           onMouseLeave={() => setHoveredItem(null)}
@@ -80,7 +80,7 @@ export default function LeftSidebar() {
         <div className="w-full h-px bg-border/50" />
 
         {/* Navigation Icons */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -94,8 +94,8 @@ export default function LeftSidebar() {
               >
                 <Link href={item.href}>
                   <motion.div
-                    whileHover={{ x: 10, scale: 1.2 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    whileHover={{ scale: 1.2 }}
+                    transition={{ duration: 0.15 }}
                     className={`flex items-center justify-center w-12 h-12 rounded-xl transition-colors ${
                       isActive 
                         ? 'bg-primary text-white shadow-lg' 
@@ -128,7 +128,7 @@ export default function LeftSidebar() {
 
         {/* User Section */}
         {session?.user ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5">
             <div 
               className="relative"
               onMouseEnter={() => setHoveredItem('dashboard')}
@@ -136,8 +136,8 @@ export default function LeftSidebar() {
             >
               <Link href="/dashboard">
                 <motion.div
-                  whileHover={{ x: 10, scale: 1.2 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  whileHover={{ scale: 1.2 }}
+                  transition={{ duration: 0.15 }}
                   className="flex items-center justify-center w-12 h-12 rounded-xl hover:bg-white/50 text-foreground transition-colors"
                 >
                   <User className="w-6 h-6" />
@@ -165,8 +165,8 @@ export default function LeftSidebar() {
             >
               <motion.button
                 onClick={handleSignOut}
-                whileHover={{ x: 10, scale: 1.2 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                whileHover={{ scale: 1.2 }}
+                transition={{ duration: 0.15 }}
                 className="flex items-center justify-center w-12 h-12 rounded-xl hover:bg-destructive/10 text-destructive transition-colors"
               >
                 <LogOut className="w-6 h-6" />
@@ -194,8 +194,8 @@ export default function LeftSidebar() {
           >
             <Link href="/auth">
               <motion.div
-                whileHover={{ x: 10, scale: 1.2 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                whileHover={{ scale: 1.2 }}
+                transition={{ duration: 0.15 }}
                 className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-white shadow-lg transition-colors hover:bg-primary/90"
               >
                 <User className="w-6 h-6" />

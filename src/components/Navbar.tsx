@@ -47,9 +47,14 @@ export default function Navbar() {
         isScrolled ? 'w-[95%] max-w-6xl' : 'w-[90%] max-w-5xl'
       }`}
     >
-      <div className={`bg-white rounded-2xl px-6 py-4 shadow-xl smooth-hover border border-border ${
-        isScrolled ? 'shadow-2xl' : ''
-      }`}>
+      <div 
+        className={`bg-white rounded-2xl px-6 py-4 border border-border smooth-hover ${
+          isScrolled ? '' : ''
+        }`}
+        style={{ 
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), 4px 4px 0px rgba(0, 0, 0, 0.1)' 
+        }}
+      >
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 smooth-hover hover:scale-105">
