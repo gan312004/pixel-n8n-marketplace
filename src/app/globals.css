@@ -1,3 +1,4 @@
+/* Updated: 2025-10-17T17:51:16.872Z */
 /* Updated: 2025-10-17T11:30:13.083Z */
 /* Updated: 2025-10-17T11:29:33.769Z */
 /* Updated: 2025-10-17T11:23:36.634Z */
@@ -180,6 +181,19 @@
   
   .neon-glow {
     box-shadow: 0 0 10px var(--color-neon-green), 0 0 20px var(--color-neon-green);
+  }
+
+  @keyframes shimmer {
+    0%, 90%, 100% {
+      background-position: calc(-100% - var(--shimmer-width)) 0;
+    }
+    30%, 60% {
+      background-position: calc(100% + var(--shimmer-width)) 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 8s infinite;
   }
 }
 

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Zap, Shield, Code, Puzzle, Rocket, Clock } from 'lucide-react'
+import { ShinyText } from '@/components/ui/shiny-text'
 
 export default function Features() {
   const features = [
@@ -50,9 +51,9 @@ export default function Features() {
           <h2 className="pixel-text text-3xl md:text-4xl mb-4">
             Why Choose Us
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <ShinyText className="text-lg max-w-2xl mx-auto block">
             Everything you need to automate your workflows and scale your business
-          </p>
+          </ShinyText>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

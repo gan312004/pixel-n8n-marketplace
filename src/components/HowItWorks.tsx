@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Search, Download, Settings, CheckCircle } from 'lucide-react'
+import { ShinyText } from '@/components/ui/shiny-text'
 
 export default function HowItWorks() {
   const steps = [
@@ -40,9 +41,9 @@ export default function HowItWorks() {
           <h2 className="pixel-text text-3xl md:text-4xl mb-4">
             How It Works
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <ShinyText className="text-lg max-w-2xl mx-auto block">
             Get started in minutes with our simple 4-step process
-          </p>
+          </ShinyText>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

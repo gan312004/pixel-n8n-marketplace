@@ -5,6 +5,7 @@ import { ArrowRight, Zap, Bot } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { ShinyText } from '@/components/ui/shiny-text'
 
 export default function Hero() {
   const [displayText, setDisplayText] = useState('')
@@ -70,10 +71,10 @@ export default function Hero() {
             </span>
           </h1>
           
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
+          <ShinyText className="text-lg md:text-xl max-w-3xl mx-auto mb-8 leading-relaxed block">
             Supercharge your automation with premium n8n templates and intelligent agents. 
             Ready to deploy, easy to customize, built by experts.
-          </p>
+          </ShinyText>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             <Button 

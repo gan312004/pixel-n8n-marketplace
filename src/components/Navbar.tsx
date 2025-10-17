@@ -2,15 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronDown, Menu, X, User } from 'lucide-react'
+import { ChevronDown, Menu, X, User, Settings as SettingsIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useSession } from '@/lib/auth-client'
+import { useSession, authClient } from '@/lib/auth-client'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
-  const { data: session, isPending } = useSession()
+  const { data: session, isPending, refetch } = useSession()
+  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +22,17 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const handleSignOut = async () => {
+    const { error } = await authClient.signOut()
+    if (error?.code) {
+      toast.error(error.code)
+    } else {
+      localStorage.removeItem("bearer_token")
+      refetch()
+      router.push("/")
+    }
+  }
 
   const navLinks = [
     {
@@ -113,12 +127,65 @@ export default function Navbar() {
 
             {!isPending && (
               session?.user ? (
-                <Button asChild className="pixel-text text-xs bg-primary hover:bg-primary/90 smooth-hover hover:scale-105 gap-2">
-                  <Link href="/dashboard">
-                    <User className="w-4 h-4" />
-                    Dashboard
-                  </Link>
-                </Button>
+                <div className="flex items-center gap-3">
+                  <Button 
+                    asChild 
+                    className="pixel-text text-xs bg-primary hover:bg-primary/90 smooth-hover gap-2 relative"
+                    style={{
+                      transform: 'translateZ(0)',
+                      boxShadow: '0 8px 0 rgba(107, 70, 193, 0.8), 0 12px 20px rgba(0, 0, 0, 0.3)',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-4px) translateZ(0)'
+                      e.currentTarget.style.boxShadow = '0 12px 0 rgba(107, 70, 193, 0.8), 0 16px 24px rgba(0, 0, 0, 0.4)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateZ(0)'
+                      e.currentTarget.style.boxShadow = '0 8px 0 rgba(107, 70, 193, 0.8), 0 12px 20px rgba(0, 0, 0, 0.3)'
+                    }}
+                  >
+                    <Link href="/dashboard">
+                      <User className="w-4 h-4" />
+                      Dashboard
+                    </Link>
+                  </Button>
+                  
+                  {/* Settings Dropdown */}
+                  <div className="relative group">
+                    <button
+                      className="flex items-center gap-1 smooth-hover hover:text-primary font-medium p-2 rounded-lg hover:bg-muted"
+                      onMouseEnter={() => setOpenDropdown('settings')}
+                      onMouseLeave={() => setOpenDropdown(null)}
+                    >
+                      <SettingsIcon className="w-5 h-5" />
+                    </button>
+                    
+                    <div
+                      className={`absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl overflow-hidden transition-all duration-300 ${
+                        openDropdown === 'settings'
+                          ? 'opacity-100 translate-y-0 pointer-events-auto'
+                          : 'opacity-0 -translate-y-2 pointer-events-none'
+                      }`}
+                      onMouseEnter={() => setOpenDropdown('settings')}
+                      onMouseLeave={() => setOpenDropdown(null)}
+                    >
+                      <button
+                        onClick={() => document.documentElement.classList.toggle('dark')}
+                        className="w-full text-left px-4 py-3 smooth-hover hover:bg-muted hover:text-primary font-medium"
+                      >
+                        Toggle Theme
+                      </button>
+                      <div className="h-px bg-border" />
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full text-left px-4 py-3 smooth-hover hover:bg-destructive/10 text-destructive font-medium"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <Button asChild className="pixel-text text-xs bg-primary hover:bg-primary/90 smooth-hover hover:scale-105">
                   <Link href="/auth">Login</Link>
@@ -181,12 +248,26 @@ export default function Navbar() {
             <div className="pt-2">
               {!isPending && (
                 session?.user ? (
-                  <Button asChild className="w-full pixel-text text-xs bg-primary hover:bg-primary/90">
-                    <Link href="/dashboard">
-                      <User className="w-4 h-4 mr-2" />
-                      Dashboard
-                    </Link>
-                  </Button>
+                  <div className="space-y-2">
+                    <Button asChild className="w-full pixel-text text-xs bg-primary hover:bg-primary/90">
+                      <Link href="/dashboard">
+                        <User className="w-4 h-4 mr-2" />
+                        Dashboard
+                      </Link>
+                    </Button>
+                    <button
+                      onClick={() => document.documentElement.classList.toggle('dark')}
+                      className="w-full px-3 py-2 text-left smooth-hover hover:text-primary font-medium rounded-lg hover:bg-muted"
+                    >
+                      Toggle Theme
+                    </button>
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full px-3 py-2 text-left smooth-hover hover:bg-destructive/10 text-destructive font-medium rounded-lg"
+                    >
+                      Logout
+                    </button>
+                  </div>
                 ) : (
                   <Button asChild className="w-full pixel-text text-xs bg-primary hover:bg-primary/90">
                     <Link href="/auth">Login</Link>
