@@ -119,9 +119,9 @@ export default function TemplatesShowcase() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
             >
-              <Card className="overflow-hidden smooth-hover hover:shadow-xl border-2 group">
+              <Card className="overflow-hidden smooth-hover hover:shadow-xl border-2 group bg-card">
                 {/* Image Placeholder */}
-                <div className="h-48 bg-gradient-to-br from-primary/20 via-deep-purple/20 to-neon-green/20 relative overflow-hidden">
+                <div className="h-48 bg-gradient-to-br from-primary/20 via-primary/10 to-accent/20 relative overflow-hidden">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-16 h-16 bg-gradient-to-br from-deep-purple to-primary rounded-lg pixel-shadow flex items-center justify-center">
                       <span className="pixel-text text-neon-green text-xs">N8N</span>

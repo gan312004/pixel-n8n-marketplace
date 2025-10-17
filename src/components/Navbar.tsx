@@ -62,9 +62,7 @@ export default function Navbar() {
       }`}
     >
       <div 
-        className={`bg-white rounded-2xl px-6 py-4 border border-border smooth-hover ${
-          isScrolled ? '' : ''
-        }`}
+        className="bg-white dark:bg-white rounded-2xl px-6 py-4 border border-border smooth-hover"
         style={{ 
           boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), 4px 4px 0px rgba(0, 0, 0, 0.1)' 
         }}
@@ -75,7 +73,7 @@ export default function Navbar() {
             <div className="w-12 h-12 bg-gradient-to-br from-deep-purple to-black rounded-xl flex items-center justify-center pixel-shadow">
               <span className="pixel-text text-dark-green" style={{ fontSize: '10px' }}>Auto</span>
             </div>
-            <span className="pixel-text text-sm hidden sm:block">Mart</span>
+            <span className="pixel-text text-sm hidden sm:block text-black">Mart</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -85,7 +83,7 @@ export default function Navbar() {
                 {link.dropdown ? (
                   <>
                     <button
-                      className="flex items-center gap-1 smooth-hover hover:text-primary font-medium"
+                      className="flex items-center gap-1 smooth-hover hover:text-primary font-medium text-black"
                       onMouseEnter={() => setOpenDropdown(link.name)}
                       onMouseLeave={() => setOpenDropdown(null)}
                     >
@@ -95,7 +93,7 @@ export default function Navbar() {
                     
                     {/* Dropdown Menu */}
                     <div
-                      className={`absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl overflow-hidden transition-all duration-300 ${
+                      className={`absolute top-full left-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl overflow-hidden transition-all duration-300 animate-slideDown ${
                         openDropdown === link.name
                           ? 'opacity-100 translate-y-0 pointer-events-auto'
                           : 'opacity-0 -translate-y-2 pointer-events-none'
@@ -103,11 +101,11 @@ export default function Navbar() {
                       onMouseEnter={() => setOpenDropdown(link.name)}
                       onMouseLeave={() => setOpenDropdown(null)}
                     >
-                      {link.dropdown.map((item, idx) => (
+                      {link.dropdown.map((item) => (
                         <Link
                           key={item.name}
                           href={item.href}
-                          className="block px-4 py-3 smooth-hover hover:bg-muted hover:text-primary font-medium"
+                          className="block px-4 py-3 smooth-hover hover:bg-muted hover:text-primary font-medium text-black"
                         >
                           {item.name}
                         </Link>
@@ -117,7 +115,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={link.href!}
-                    className="smooth-hover hover:text-primary font-medium"
+                    className="smooth-hover hover:text-primary font-medium text-black"
                   >
                     {link.name}
                   </Link>
@@ -154,7 +152,7 @@ export default function Navbar() {
                   {/* Settings Dropdown */}
                   <div className="relative group">
                     <button
-                      className="flex items-center gap-1 smooth-hover hover:text-primary font-medium p-2 rounded-lg hover:bg-muted"
+                      className="flex items-center gap-1 smooth-hover hover:text-primary font-medium p-2 rounded-lg hover:bg-muted text-black"
                       onMouseEnter={() => setOpenDropdown('settings')}
                       onMouseLeave={() => setOpenDropdown(null)}
                     >
@@ -162,7 +160,7 @@ export default function Navbar() {
                     </button>
                     
                     <div
-                      className={`absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl overflow-hidden transition-all duration-300 ${
+                      className={`absolute top-full right-0 mt-2 min-w-[200px] bg-white border border-border rounded-lg shadow-xl overflow-hidden transition-all duration-300 animate-slideDown ${
                         openDropdown === 'settings'
                           ? 'opacity-100 translate-y-0 pointer-events-auto'
                           : 'opacity-0 -translate-y-2 pointer-events-none'
@@ -172,7 +170,7 @@ export default function Navbar() {
                     >
                       <button
                         onClick={() => document.documentElement.classList.toggle('dark')}
-                        className="w-full text-left px-4 py-3 smooth-hover hover:bg-muted hover:text-primary font-medium"
+                        className="w-full text-left px-4 py-3 smooth-hover hover:bg-muted hover:text-primary font-medium text-black"
                       >
                         Toggle Theme
                       </button>
@@ -196,7 +194,7 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden smooth-hover hover:text-primary"
+            className="md:hidden smooth-hover hover:text-primary text-black"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -211,7 +209,7 @@ export default function Navbar() {
                 {link.dropdown ? (
                   <>
                     <button
-                      className="w-full text-left px-3 py-2 smooth-hover hover:text-primary font-medium flex items-center justify-between"
+                      className="w-full text-left px-3 py-2 smooth-hover hover:text-primary font-medium flex items-center justify-between text-black"
                       onClick={() => setOpenDropdown(openDropdown === link.name ? null : link.name)}
                     >
                       {link.name}
@@ -220,12 +218,12 @@ export default function Navbar() {
                       }`} />
                     </button>
                     {openDropdown === link.name && (
-                      <div className="ml-4 space-y-1">
+                      <div className="ml-4 space-y-1 animate-slideDown">
                         {link.dropdown.map((item) => (
                           <Link
                             key={item.name}
                             href={item.href}
-                            className="block px-3 py-2 smooth-hover hover:text-primary text-sm"
+                            className="block px-3 py-2 smooth-hover hover:text-primary text-sm text-black"
                             onClick={() => setIsMenuOpen(false)}
                           >
                             {item.name}
@@ -237,7 +235,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={link.href!}
-                    className="block px-3 py-2 smooth-hover hover:text-primary font-medium"
+                    className="block px-3 py-2 smooth-hover hover:text-primary font-medium text-black"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.name}
@@ -257,7 +255,7 @@ export default function Navbar() {
                     </Button>
                     <button
                       onClick={() => document.documentElement.classList.toggle('dark')}
-                      className="w-full px-3 py-2 text-left smooth-hover hover:text-primary font-medium rounded-lg hover:bg-muted"
+                      className="w-full px-3 py-2 text-left smooth-hover hover:text-primary font-medium rounded-lg hover:bg-muted text-black"
                     >
                       Toggle Theme
                     </button>

@@ -61,12 +61,12 @@ export default function Hero() {
           </div>
           
           <h1 className="pixel-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight">
-            <span className="text-neon-green" style={{ textShadow: '4px 4px 0px rgba(0, 0, 0, 1)' }}>
+            <span className="text-neon-green dark:text-white" style={{ textShadow: '4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
               n8n {displayText}
               <span style={{ opacity: showCursor ? 1 : 0 }}>|</span>
             </span>
             <br />
-            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-4 block">
+            <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-4 block dark:text-primary">
               & AI Agents
             </span>
           </h1>
@@ -113,7 +113,7 @@ export default function Hero() {
           ].map((stat, idx) => (
             <div
               key={idx}
-              className="glassmorphic rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105"
+              className="glassmorphic bg-card rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105"
             >
               <stat.icon className="w-8 h-8 mx-auto mb-3 text-neon-green" />
               <div className="pixel-text text-2xl mb-2">{stat.value}</div>

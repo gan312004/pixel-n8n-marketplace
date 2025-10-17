@@ -71,7 +71,7 @@ export default function AgentsShowcase() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
             >
-              <Card className="p-6 smooth-hover hover:shadow-xl border-2 group overflow-hidden relative">
+              <Card className="p-6 smooth-hover hover:shadow-xl border-2 group overflow-hidden relative bg-card">
                 <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${agent.color} opacity-10 rounded-bl-full`} />
                 
                 <div className="relative">

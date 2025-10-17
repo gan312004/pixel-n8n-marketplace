@@ -14,7 +14,7 @@ export default function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-gradient-to-br from-dark-purple to-deep-purple rounded-lg p-12 pixel-shadow text-center text-white !w-[99.8%] !h-full">
+          className="bg-gradient-to-br from-primary to-deep-purple rounded-lg p-12 pixel-shadow text-center text-white !w-[99.8%] !h-full">
 
           <h2 className="pixel-text text-3xl md:text-4xl mb-4">
             Ready to Automate?

@@ -4,14 +4,29 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, FileText, Bot, DollarSign, Package, User, Settings } from 'lucide-react'
-import { motion } from 'framer-motion'
-import { useSession } from '@/lib/auth-client'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useSession, authClient } from '@/lib/auth-client'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 export default function LeftSidebar() {
   const pathname = usePathname()
-  const { data: session } = useSession()
+  const { data: session, refetch } = useSession()
+  const router = useRouter()
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
   const [showSettings, setShowSettings] = useState(false)
+
+  const handleSignOut = async () => {
+    const { error } = await authClient.signOut()
+    if (error?.code) {
+      toast.error(error.code)
+    } else {
+      localStorage.removeItem("bearer_token")
+      refetch()
+      router.push("/")
+    }
+    setShowSettings(false)
+  }
 
   const navItems = [
     { name: 'Home', href: '/', icon: Home },
@@ -49,17 +64,19 @@ export default function LeftSidebar() {
           </Link>
           
           {/* Tooltip */}
-          {hoveredItem === 'logo' && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none"
-            >
-              AutoMart
-              <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {hoveredItem === 'logo' && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none"
+              >
+                AutoMart
+                <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         <div className="w-full h-px bg-border/50" />
@@ -92,18 +109,20 @@ export default function LeftSidebar() {
                 </Link>
 
                 {/* Tooltip */}
-                {hoveredItem === item.name && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none z-50"
-                  >
-                    {item.name}
-                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
-                  </motion.div>
-                )}
+                <AnimatePresence>
+                  {hoveredItem === item.name && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none z-50"
+                    >
+                      {item.name}
+                      <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )
           })}
@@ -129,18 +148,20 @@ export default function LeftSidebar() {
                 </motion.div>
               </Link>
 
-              {hoveredItem === 'dashboard' && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none z-50"
-                >
-                  Dashboard
-                  <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {hoveredItem === 'dashboard' && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none z-50"
+                  >
+                    Dashboard
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div 
@@ -157,18 +178,20 @@ export default function LeftSidebar() {
                 <Settings className="w-6 h-6" />
               </motion.button>
 
-              {hoveredItem === 'settings' && (
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none z-50"
-                >
-                  Settings
-                  <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {hoveredItem === 'settings' && !showSettings && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none z-50"
+                  >
+                    Settings
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         ) : (
@@ -187,70 +210,63 @@ export default function LeftSidebar() {
               </motion.div>
             </Link>
 
-            {hoveredItem === 'login' && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-                className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none z-50"
-              >
-                Login
-                <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
-              </motion.div>
-            )}
+            <AnimatePresence>
+              {hoveredItem === 'login' && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-black text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap pointer-events-none z-50"
+                >
+                  Login
+                  <div className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-black" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>
 
       {/* Settings Dropdown */}
-      {showSettings && session?.user && (
-        <motion.div
-          initial={{ opacity: 0, x: -20, y: 20 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          exit={{ opacity: 0, x: -20, y: 20 }}
-          className="absolute left-full ml-4 bottom-0 bg-white rounded-lg shadow-xl border border-border p-2 min-w-[200px]"
-          style={{ 
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1)' 
-          }}
-        >
-          <Link 
-            href="/dashboard"
-            className="block px-4 py-2 rounded-lg smooth-hover hover:bg-muted text-sm font-medium"
-            onClick={() => setShowSettings(false)}
-          >
-            Dashboard
-          </Link>
-          <button 
-            onClick={() => {
-              document.documentElement.classList.toggle('dark')
-              setShowSettings(false)
+      <AnimatePresence>
+        {showSettings && session?.user && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="absolute left-full ml-4 bottom-0 bg-white rounded-lg shadow-xl border border-border p-2 min-w-[200px]"
+            style={{ 
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1)' 
             }}
-            className="w-full text-left px-4 py-2 rounded-lg smooth-hover hover:bg-muted text-sm font-medium"
           >
-            Toggle Theme
-          </button>
-          <div className="h-px bg-border my-1" />
-          <button 
-            onClick={async () => {
-              const { authClient } = await import('@/lib/auth-client')
-              const { toast } = await import('sonner')
-              const { useRouter } = await import('next/navigation')
-              
-              const { error } = await authClient.signOut()
-              if (error?.code) {
-                toast.error(error.code)
-              } else {
-                localStorage.removeItem("bearer_token")
-                window.location.href = "/"
-              }
-            }}
-            className="w-full text-left px-4 py-2 rounded-lg smooth-hover hover:bg-destructive/10 text-destructive text-sm font-medium"
-          >
-            Logout
-          </button>
-        </motion.div>
-      )}
+            <Link 
+              href="/dashboard"
+              className="block px-4 py-2 rounded-lg smooth-hover hover:bg-muted text-sm font-medium text-black"
+              onClick={() => setShowSettings(false)}
+            >
+              Dashboard
+            </Link>
+            <button 
+              onClick={() => {
+                document.documentElement.classList.toggle('dark')
+                setShowSettings(false)
+              }}
+              className="w-full text-left px-4 py-2 rounded-lg smooth-hover hover:bg-muted text-sm font-medium text-black"
+            >
+              Toggle Theme
+            </button>
+            <div className="h-px bg-border my-1" />
+            <button 
+              onClick={handleSignOut}
+              className="w-full text-left px-4 py-2 rounded-lg smooth-hover hover:bg-destructive/10 text-destructive text-sm font-medium"
+            >
+              Logout
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

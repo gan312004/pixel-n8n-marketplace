@@ -77,7 +77,7 @@ export default function PricingPlans() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
             >
-              <Card className={`p-8 smooth-hover hover:shadow-2xl relative overflow-hidden ${
+              <Card className={`p-8 smooth-hover hover:shadow-2xl relative overflow-hidden bg-card ${
                 plan.popular ? 'border-2 border-primary scale-105 md:scale-110' : 'border-2'
               }`}>
                 {plan.popular && (
@@ -126,7 +126,7 @@ export default function PricingPlans() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-12"
         >
-          <Card className="p-8 bg-gradient-to-r from-primary/10 via-deep-purple/10 to-neon-green/10 border-2 border-primary/30">
+          <Card className="p-8 bg-gradient-to-r from-primary/10 via-primary/5 to-accent/10 border-2 border-primary/30">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>
                 <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">

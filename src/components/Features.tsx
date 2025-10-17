@@ -64,7 +64,7 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="bg-white rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105"
+              className="bg-card rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105 border border-border"
             >
               <feature.icon className="w-12 h-12 text-neon-green mb-4" />
               <h3 className="font-bold text-xl mb-2">{feature.title}</h3>
