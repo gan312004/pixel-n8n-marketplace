@@ -56,7 +56,7 @@ export default function AgentsPage() {
   return (
     <>
       <LeftSidebar />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-32 pb-20 px-4 pl-32">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-20 pb-20 px-4 pl-32">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
@@ -138,7 +138,7 @@ export default function AgentsPage() {
                       </div>
 
                       <div className="flex items-center justify-between pt-4 border-t">
-                        <span className="pixel-text text-xl text-primary">${agent.price}</span>
+                        <span className="text-xl font-bold text-primary">${agent.price}</span>
                         <span className="text-sm text-muted-foreground">
                           {agent.downloads} downloads
                         </span>

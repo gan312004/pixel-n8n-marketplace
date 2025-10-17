@@ -37,7 +37,7 @@ export default function BundlesPage() {
   return (
     <>
       <LeftSidebar />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-32 pb-20 px-4 pl-32">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-20 pb-20 px-4 pl-32">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
@@ -83,7 +83,7 @@ export default function BundlesPage() {
                   {/* Pricing */}
                   <div className="mb-6 pb-6 border-b">
                     <div className="flex items-baseline gap-3 mb-2">
-                      <span className="pixel-text text-3xl text-primary">${bundle.bundlePrice}</span>
+                      <span className="text-3xl font-bold text-primary">${bundle.bundlePrice}</span>
                       <span className="text-lg text-muted-foreground line-through">${bundle.originalPrice}</span>
                       <span className="px-2 py-1 bg-neon-green/10 text-neon-green text-xs font-bold rounded">
                         SAVE {bundle.discount}%

@@ -62,7 +62,7 @@ export default function PricingPage() {
   return (
     <>
       <LeftSidebar />
-      <div className="min-h-screen pt-32 pb-20 px-4 pl-32">
+      <div className="min-h-screen pt-20 pb-20 px-4 pl-32">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
