@@ -36,6 +36,8 @@ interface Agent {
   description: string
   features: string[]
   requirements: string[]
+  keyPoints: string[]
+  whyBuyIt: string
   image?: string | null
   createdAt: string
 }
@@ -83,6 +85,8 @@ export default function AdminPage() {
     description: '',
     features: '',
     requirements: '',
+    keyPoints: '',
+    whyBuyIt: '',
     image: ''
   })
 
@@ -250,6 +254,7 @@ export default function AdminPage() {
       const token = localStorage.getItem('bearer_token')
       const features = agentForm.features.split(',').map(f => f.trim()).filter(Boolean)
       const requirements = agentForm.requirements.split(',').map(r => r.trim()).filter(Boolean)
+      const keyPoints = agentForm.keyPoints.split(',').map(k => k.trim()).filter(Boolean)
 
       const response = await fetch('/api/admin/agents', {
         method: 'POST',
@@ -264,6 +269,8 @@ export default function AdminPage() {
           description: agentForm.description,
           features,
           requirements,
+          keyPoints: keyPoints.length > 0 ? keyPoints : null,
+          whyBuyIt: agentForm.whyBuyIt || null,
           image: agentForm.image || null
         })
       })
@@ -279,6 +286,8 @@ export default function AdminPage() {
           description: '',
           features: '',
           requirements: '',
+          keyPoints: '',
+          whyBuyIt: '',
           image: ''
         })
         loadAgents()
@@ -654,6 +663,26 @@ export default function AdminPage() {
                     placeholder="n8n 1.0+, API access"
                     required
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Key Points (comma-separated)</label>
+                  <Textarea
+                    value={agentForm.keyPoints}
+                    onChange={(e) => setAgentForm({ ...agentForm, keyPoints: e.target.value })}
+                    placeholder="Easy to use, Fast integration, 24/7 support"
+                    rows={2}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Selling points that make this agent stand out</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Why Buy It?</label>
+                  <Textarea
+                    value={agentForm.whyBuyIt}
+                    onChange={(e) => setAgentForm({ ...agentForm, whyBuyIt: e.target.value })}
+                    placeholder="Explain why customers should purchase this agent..."
+                    rows={3}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Compelling reasons to purchase</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Image URL</label>

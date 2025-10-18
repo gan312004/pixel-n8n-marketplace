@@ -95,6 +95,8 @@ export const agents = sqliteTable("agents", {
   description: text("description").notNull(),
   features: text("features", { mode: "json" }).notNull(),
   requirements: text("requirements", { mode: "json" }).notNull(),
+  keyPoints: text("key_points", { mode: "json" }),
+  whyBuyIt: text("why_buy_it"),
   image: text("image"),
   createdAt: text("created_at").notNull(),
 });

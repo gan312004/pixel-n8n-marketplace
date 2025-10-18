@@ -61,7 +61,7 @@ export default function Hero() {
           </div>
           
           <h1 className="pixel-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight">
-            <span className="text-neon-green dark:text-white" style={{ textShadow: '4px 4px 0px rgba(0, 0, 0, 0.25)' }}>
+            <span className="text-neon-green dark:text-white" style={{ textShadow: '4px 4px 0px rgba(0, 0, 0, 1)' }}>
               n8n {displayText}
               <span style={{ opacity: showCursor ? 1 : 0 }}>|</span>
             </span>

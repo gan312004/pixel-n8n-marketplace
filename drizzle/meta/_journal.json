@@ -15,6 +15,13 @@
       "when": 1760772713700,
       "tag": "0001_useful_shatterstar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1760773613398,
+      "tag": "0002_empty_emma_frost",
+      "breakpoints": true
     }
   ]
 }

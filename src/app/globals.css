@@ -1,29 +1,4 @@
 /* Updated: 2025-10-18T07:26:56.183Z */
-/* Updated: 2025-10-17T17:51:16.872Z */
-/* Updated: 2025-10-17T11:30:13.083Z */
-/* Updated: 2025-10-17T11:29:33.769Z */
-/* Updated: 2025-10-17T11:23:36.634Z */
-/* Updated: 2025-10-17T11:22:58.450Z */
-/* Updated: 2025-10-17T11:22:20.052Z */
-/* Updated: 2025-10-17T11:21:41.884Z */
-/* Updated: 2025-10-17T11:20:48.002Z */
-/* Updated: 2025-10-17T11:19:17.794Z */
-/* Updated: 2025-10-17T11:18:00.246Z */
-/* Updated: 2025-10-17T11:17:21.881Z */
-/* Updated: 2025-10-17T11:09:44.110Z */
-/* Updated: 2025-10-17T11:08:46.361Z */
-/* Updated: 2025-10-17T11:07:07.700Z */
-/* Updated: 2025-10-17T11:06:29.680Z */
-/* Updated: 2025-10-17T11:03:18.457Z */
-/* Updated: 2025-10-17T11:02:39.900Z */
-/* Updated: 2025-10-17T11:01:03.840Z */
-/* Updated: 2025-10-17T11:00:24.370Z */
-/* Updated: 2025-10-17T10:25:22.003Z */
-/* Updated: 2025-10-17T09:47:00.929Z */
-/* Updated: 2025-10-17T07:58:00.198Z */
-/* Updated: 2025-10-16T17:47:46.967Z */
-/* Updated: 2025-10-16T12:47:17.147Z */
-/* Updated: 2025-10-16T10:29:41.797Z */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -90,18 +65,18 @@
   --secondary-foreground: #000000;
   --muted: #F9FAFB;
   --muted-foreground: #6B7280;
-  --accent: #064E3B;
+  --accent: #047857;
   --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --border: #E5E7EB;
   --input: #E5E7EB;
   --ring: #6B46C1;
-  --neon-green: #064E3B;
-  --dark-green: #064E3B;
+  --neon-green: #047857;
+  --dark-green: #047857;
   --dark-purple: #4C1D95;
   --deep-purple: #2D1B4E;
   --chart-1: #6B46C1;
-  --chart-2: #064E3B;
+  --chart-2: #047857;
   --chart-3: #F59E0B;
   --chart-4: #3B82F6;
   --chart-5: #EF4444;

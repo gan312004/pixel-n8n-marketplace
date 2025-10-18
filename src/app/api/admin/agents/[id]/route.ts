@@ -166,6 +166,24 @@ export async function PUT(
       body.requirements = JSON.stringify(body.requirements);
     }
 
+    if ('keyPoints' in body) {
+      if (body.keyPoints !== null && !Array.isArray(body.keyPoints)) {
+        return NextResponse.json(
+          { 
+            success: false,
+            error: 'Key points must be an array or null',
+            code: 'INVALID_KEY_POINTS_FORMAT'
+          },
+          { status: 400 }
+        );
+      }
+      body.keyPoints = body.keyPoints ? JSON.stringify(body.keyPoints) : null;
+    }
+
+    if ('whyBuyIt' in body && body.whyBuyIt !== null) {
+      body.whyBuyIt = body.whyBuyIt.trim();
+    }
+
     if ('rating' in body) {
       const rating = parseFloat(body.rating);
       if (isNaN(rating) || rating < 0 || rating > 5) {
@@ -208,6 +226,9 @@ export async function PUT(
     }
     if (returnedAgent.requirements && typeof returnedAgent.requirements === 'string') {
       returnedAgent.requirements = JSON.parse(returnedAgent.requirements);
+    }
+    if (returnedAgent.keyPoints && typeof returnedAgent.keyPoints === 'string') {
+      returnedAgent.keyPoints = JSON.parse(returnedAgent.keyPoints);
     }
 
     return NextResponse.json(

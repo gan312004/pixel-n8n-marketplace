@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, type, price, description, features, requirements, image } = body;
+    const { name, type, price, description, features, requirements, keyPoints, whyBuyIt, image } = body;
 
     if (!name) {
       return NextResponse.json({
@@ -183,6 +183,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    if (keyPoints !== undefined && keyPoints !== null && !Array.isArray(keyPoints)) {
+      return NextResponse.json({
+        success: false,
+        error: 'Key points must be an array',
+        code: 'INVALID_KEY_POINTS'
+      }, { status: 400 });
+    }
+
     const parsedPrice = parseInt(price);
     if (isNaN(parsedPrice) || parsedPrice < 0) {
       return NextResponse.json({
@@ -199,6 +207,8 @@ export async function POST(request: NextRequest) {
       description: description.trim(),
       features: JSON.stringify(features),
       requirements: JSON.stringify(requirements),
+      keyPoints: keyPoints ? JSON.stringify(keyPoints) : null,
+      whyBuyIt: whyBuyIt ? whyBuyIt.trim() : null,
       image: image ? image.trim() : null,
       rating: 0,
       downloads: 0,
