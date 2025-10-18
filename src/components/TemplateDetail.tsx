@@ -1,16 +1,29 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   ArrowLeft, Star, Download, Eye, Check, Play, 
-  FileText, Settings, Zap, ShoppingCart 
+  FileText, Settings, Zap, ShoppingCart, Loader2 
 } from 'lucide-react'
 import Link from 'next/link'
-import Navbar from '@/components/Navbar'
+
+interface Template {
+  id: number
+  name: string
+  category: string
+  price: number
+  rating: number
+  downloads: number
+  description: string
+  featured: boolean
+  features: string[]
+  requirements: string[]
+  image?: string | null
+}
 
 interface TemplateDetailProps {
   templateId: string
@@ -18,57 +31,61 @@ interface TemplateDetailProps {
 
 export default function TemplateDetail({ templateId }: TemplateDetailProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [template, setTemplate] = useState<Template | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Mock data - in real app, fetch from API
-  const template = {
-    id: templateId,
-    name: 'AI Content Generator',
-    category: 'AI Automation',
-    price: 49,
-    rating: 4.9,
-    reviews: 234,
-    downloads: 1200,
-    description: 'Advanced AI-powered content generation workflow using GPT-4. Perfect for marketers, bloggers, and content creators who need to produce high-quality content at scale.',
-    longDescription: 'This comprehensive template integrates with multiple AI providers including OpenAI, Claude, and Gemini. It features intelligent prompt engineering, content quality scoring, and multi-format output support. Ideal for blog posts, social media, email campaigns, and more.',
-    features: [
-      'GPT-4 Integration',
-      'Multi-format output (Blog, Social, Email)',
-      'Content quality scoring',
-      'SEO optimization',
-      'Plagiarism checking',
-      'Auto-publishing to CMS',
-      'Analytics tracking',
-      'A/B testing support',
-    ],
-    requirements: [
-      'n8n version 1.0 or higher',
-      'OpenAI API key',
-      'Node.js 18+',
-      '2GB RAM minimum',
-    ],
-    setupSteps: [
-      {
-        title: 'Import Template',
-        description: 'Download and import the JSON file into your n8n instance',
-      },
-      {
-        title: 'Configure API Keys',
-        description: 'Add your OpenAI and other service API keys to credentials',
-      },
-      {
-        title: 'Customize Workflows',
-        description: 'Adjust nodes and parameters to match your use case',
-      },
-      {
-        title: 'Test & Deploy',
-        description: 'Run test executions and activate the workflow',
-      },
-    ],
+  useEffect(() => {
+    fetchTemplate()
+  }, [templateId])
+
+  const fetchTemplate = async () => {
+    try {
+      const response = await fetch(`/api/templates/${templateId}`)
+      const data = await response.json()
+      
+      if (data.success) {
+        // Parse JSON fields if they're strings
+        const parsedTemplate = {
+          ...data.data,
+          features: typeof data.data.features === 'string' 
+            ? JSON.parse(data.data.features) 
+            : data.data.features || [],
+          requirements: typeof data.data.requirements === 'string'
+            ? JSON.parse(data.data.requirements)
+            : data.data.requirements || []
+        }
+        setTemplate(parsedTemplate)
+      }
+    } catch (error) {
+      console.error('Error fetching template:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (!template) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Template not found</h2>
+          <Link href="/templates">
+            <Button>Back to Templates</Button>
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white">
-      
       <div className="pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Back Button */}
@@ -92,7 +109,6 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         <span className="font-medium">{template.rating}</span>
-                        <span className="text-sm">({template.reviews} reviews)</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Download className="w-4 h-4" />
@@ -124,15 +140,13 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
                 <TabsList className="w-full justify-start bg-white pixel-shadow">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="features">Features</TabsTrigger>
-                  <TabsTrigger value="setup">Setup Guide</TabsTrigger>
                   <TabsTrigger value="requirements">Requirements</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4 mt-6">
                   <Card className="p-6 pixel-shadow">
                     <h3 className="text-xl font-bold mb-3">Description</h3>
-                    <p className="text-muted-foreground mb-4">{template.description}</p>
-                    <p className="text-muted-foreground">{template.longDescription}</p>
+                    <p className="text-muted-foreground">{template.description}</p>
                   </Card>
                 </TabsContent>
 
@@ -140,8 +154,8 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
                   <Card className="p-6 pixel-shadow">
                     <h3 className="text-xl font-bold mb-4">What's Included</h3>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {template.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-2">
+                      {Array.isArray(template.features) && template.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
                           <Check className="w-5 h-5 text-neon-green flex-shrink-0 mt-0.5" />
                           <span>{feature}</span>
                         </li>
@@ -150,31 +164,12 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
                   </Card>
                 </TabsContent>
 
-                <TabsContent value="setup" className="mt-6">
-                  <Card className="p-6 pixel-shadow">
-                    <h3 className="text-xl font-bold mb-4">Setup Instructions</h3>
-                    <div className="space-y-4">
-                      {template.setupSteps.map((step, idx) => (
-                        <div key={idx} className="flex gap-4">
-                          <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                            {idx + 1}
-                          </div>
-                          <div>
-                            <h4 className="font-bold mb-1">{step.title}</h4>
-                            <p className="text-sm text-muted-foreground">{step.description}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                </TabsContent>
-
                 <TabsContent value="requirements" className="mt-6">
                   <Card className="p-6 pixel-shadow">
                     <h3 className="text-xl font-bold mb-4">Requirements</h3>
                     <ul className="space-y-2">
-                      {template.requirements.map((req) => (
-                        <li key={req} className="flex items-start gap-2">
+                      {Array.isArray(template.requirements) && template.requirements.map((req, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
                           <Settings className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                           <span>{req}</span>
                         </li>
@@ -195,11 +190,9 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
                     <span className="pixel-text text-2xl text-primary">${template.price}</span>
                   </div>
 
-                  <Button asChild className="w-full smooth-hover hover:scale-105 pixel-text text-xs" size="lg">
-                    <Link href="/auth">
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Buy Now
-                    </Link>
+                  <Button className="w-full smooth-hover hover:scale-105 pixel-text text-xs" size="lg">
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Buy Now
                   </Button>
 
                   <Button 
@@ -226,7 +219,7 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-neon-green" />
-                      <span>Community support</span>
+                      <span>Installation guide PDF</span>
                     </div>
                   </div>
                 </div>
