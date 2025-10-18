@@ -16,7 +16,9 @@ interface Agent {
   price: number
   rating: number
   downloads: number
-  features: string[]
+  features: string[] | string
+  keyPoints?: string[] | string
+  whyBuyIt?: string
 }
 
 export default function AgentsPage() {
@@ -29,7 +31,17 @@ export default function AgentsPage() {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          setAgents(data.data)
+          // Parse JSON strings from database
+          const parsedAgents = data.data.map((agent: Agent) => ({
+            ...agent,
+            features: typeof agent.features === 'string' 
+              ? JSON.parse(agent.features) 
+              : agent.features || [],
+            keyPoints: agent.keyPoints 
+              ? (typeof agent.keyPoints === 'string' ? JSON.parse(agent.keyPoints) : agent.keyPoints)
+              : []
+          }))
+          setAgents(parsedAgents)
         }
       })
       .catch(error => console.error('Error fetching agents:', error))
@@ -129,7 +141,7 @@ export default function AgentsPage() {
                       </div>
 
                       <div className="space-y-2 mb-4">
-                        {agent.features.map((feature, i) => (
+                        {Array.isArray(agent.features) && agent.features.map((feature, i) => (
                           <div key={i} className="flex items-center gap-2 text-sm">
                             <Zap className="w-4 h-4 text-neon-green flex-shrink-0" />
                             <span>{feature}</span>
