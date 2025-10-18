@@ -14,7 +14,7 @@ interface Bundle {
   originalPrice: number
   bundlePrice: number
   discount: number
-  templates: string[]
+  templates: string[] | string
   saves: number
 }
 
@@ -27,7 +27,14 @@ export default function BundlesPage() {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          setBundles(data.data)
+          // Parse templates if it's a JSON string
+          const parsedBundles = data.data.map((bundle: Bundle) => ({
+            ...bundle,
+            templates: typeof bundle.templates === 'string' 
+              ? JSON.parse(bundle.templates) 
+              : bundle.templates || []
+          }))
+          setBundles(parsedBundles)
         }
       })
       .catch(error => console.error('Error fetching bundles:', error))
@@ -99,7 +106,7 @@ export default function BundlesPage() {
                       What's Included:
                     </h4>
                     <ul className="space-y-2">
-                      {bundle.templates.map((item, i) => (
+                      {Array.isArray(bundle.templates) && bundle.templates.map((item, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm">
                           <Check className="w-4 h-4 text-neon-green flex-shrink-0 mt-0.5" />
                           <span>{item}</span>
