@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronDown, Menu, X, User, Settings as SettingsIcon } from 'lucide-react'
+import { ChevronDown, Menu, X, User, Settings as SettingsIcon, ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useSession, authClient } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
   const { data: session, isPending, refetch } = useSession()
   const router = useRouter()
 
@@ -22,6 +23,26 @@ export default function Navbar() {
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Update cart count
+  useEffect(() => {
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]')
+      const total = cart.reduce((sum: number, item: any) => sum + item.quantity, 0)
+      setCartCount(total)
+    }
+
+    updateCartCount()
+    window.addEventListener('storage', updateCartCount)
+    
+    // Custom event for cart updates
+    window.addEventListener('cartUpdated', updateCartCount)
+    
+    return () => {
+      window.removeEventListener('storage', updateCartCount)
+      window.removeEventListener('cartUpdated', updateCartCount)
+    }
   }, [])
 
   // Check if user is admin
@@ -154,6 +175,16 @@ export default function Navbar() {
               </div>
             ))}
 
+            {/* Cart Icon */}
+            <Link href="/cart" className="relative smooth-hover hover:text-primary">
+              <ShoppingCart className="w-6 h-6 text-black" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+
             {!isPending && (
               session?.user ? (
                 <div className="flex items-center gap-3">
@@ -284,6 +315,21 @@ export default function Navbar() {
                 )}
               </div>
             ))}
+            
+            {/* Mobile Cart Link */}
+            <Link 
+              href="/cart" 
+              className="flex items-center justify-between px-3 py-2 smooth-hover hover:text-primary font-medium text-black"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <span>Cart</span>
+              {cartCount > 0 && (
+                <span className="bg-primary text-white text-xs font-bold rounded-full px-2 py-1">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+
             <div className="pt-2">
               {!isPending && (
                 session?.user ? (

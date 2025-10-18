@@ -10,6 +10,8 @@ import {
   FileText, Settings, Zap, ShoppingCart, Loader2 
 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface Template {
   id: number
@@ -33,6 +35,7 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [template, setTemplate] = useState<Template | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     fetchTemplate()
@@ -61,6 +64,36 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
     } finally {
       setLoading(false)
     }
+  }
+
+  const addToCart = () => {
+    if (!template) return
+
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]')
+    const existingItem = cart.find((item: any) => item.id === template.id && item.type === 'template')
+
+    if (existingItem) {
+      existingItem.quantity += 1
+      toast.success('Quantity updated in cart')
+    } else {
+      cart.push({
+        id: template.id,
+        name: template.name,
+        type: 'template',
+        price: template.price,
+        quantity: 1,
+        category: template.category
+      })
+      toast.success('Template added to cart!')
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart))
+    window.dispatchEvent(new Event('cartUpdated'))
+  }
+
+  const buyNow = () => {
+    addToCart()
+    router.push('/cart')
   }
 
   if (loading) {
@@ -190,9 +223,22 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
                     <span className="pixel-text text-2xl text-primary">${template.price}</span>
                   </div>
 
-                  <Button className="w-full smooth-hover hover:scale-105 pixel-text text-xs" size="lg">
+                  <Button 
+                    onClick={buyNow}
+                    className="w-full smooth-hover hover:scale-105 pixel-text text-xs" 
+                    size="lg"
+                  >
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Buy Now
+                  </Button>
+
+                  <Button 
+                    onClick={addToCart}
+                    variant="outline"
+                    className="w-full smooth-hover hover:scale-105"
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add to Cart
                   </Button>
 
                   <Button 

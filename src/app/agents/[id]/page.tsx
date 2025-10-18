@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Download, Star, Zap, Check, RefreshCw, Shield, ArrowLeft, Loader2, ChevronDown, ChevronUp } from "lucide-react"
+import { Download, Star, Zap, Check, RefreshCw, Shield, ArrowLeft, Loader2, ChevronDown, ChevronUp, ShoppingCart } from "lucide-react"
 import Link from "next/link"
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface Agent {
   id: number
@@ -25,6 +26,7 @@ interface Agent {
 
 export default function AgentDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('overview')
   const [agent, setAgent] = useState<Agent | null>(null)
   const [loading, setLoading] = useState(true)
@@ -61,6 +63,36 @@ export default function AgentDetailPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const addToCart = () => {
+    if (!agent) return
+
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]')
+    const existingItem = cart.find((item: any) => item.id === agent.id && item.type === 'agent')
+
+    if (existingItem) {
+      existingItem.quantity += 1
+      toast.success('Quantity updated in cart')
+    } else {
+      cart.push({
+        id: agent.id,
+        name: agent.name,
+        type: 'agent',
+        price: agent.price,
+        quantity: 1,
+        category: agent.type
+      })
+      toast.success('Agent added to cart!')
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart))
+    window.dispatchEvent(new Event('cartUpdated'))
+  }
+
+  const buyNow = () => {
+    addToCart()
+    router.push('/cart')
   }
 
   if (loading) {
@@ -261,10 +293,22 @@ export default function AgentDetailPage() {
               </div>
 
               <Button
+                onClick={buyNow}
                 size="lg"
                 className="w-full mb-3 pixel-text text-xs smooth-hover hover:scale-105"
               >
-                Purchase Agent
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                Buy Now
+              </Button>
+
+              <Button
+                onClick={addToCart}
+                size="lg"
+                variant="outline"
+                className="w-full mb-3"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                Add to Cart
               </Button>
 
               <Button
