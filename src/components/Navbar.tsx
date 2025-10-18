@@ -12,6 +12,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const { data: session, isPending, refetch } = useSession()
   const router = useRouter()
 
@@ -22,6 +23,36 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!session?.user) {
+        setIsAdmin(false)
+        return
+      }
+
+      try {
+        const token = localStorage.getItem('bearer_token')
+        if (!token) return
+
+        const response = await fetch('/api/admin/check-auth', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        const data = await response.json()
+        setIsAdmin(data.success && data.isAdmin)
+      } catch (error) {
+        setIsAdmin(false)
+      }
+    }
+
+    if (!isPending) {
+      checkAdmin()
+    }
+  }, [session, isPending])
 
   const handleSignOut = async () => {
     const { error } = await authClient.signOut()
@@ -148,6 +179,16 @@ export default function Navbar() {
                       Dashboard
                     </Link>
                   </Button>
+
+                  {isAdmin && (
+                    <Button 
+                      asChild 
+                      variant="outline"
+                      className="pixel-text text-xs smooth-hover"
+                    >
+                      <Link href="/admin">Admin</Link>
+                    </Button>
+                  )}
                   
                   {/* Settings Dropdown */}
                   <div className="relative group">
@@ -253,6 +294,11 @@ export default function Navbar() {
                         Dashboard
                       </Link>
                     </Button>
+                    {isAdmin && (
+                      <Button asChild variant="outline" className="w-full pixel-text text-xs">
+                        <Link href="/admin">Admin Panel</Link>
+                      </Button>
+                    )}
                     <button
                       onClick={() => document.documentElement.classList.toggle('dark')}
                       className="w-full px-3 py-2 text-left smooth-hover hover:text-primary font-medium rounded-lg hover:bg-muted text-black"

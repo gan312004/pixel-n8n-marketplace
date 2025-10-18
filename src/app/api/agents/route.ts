@@ -1,55 +1,56 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db';
+import { agents } from '@/db/schema';
+import { eq, like, and, or, desc } from 'drizzle-orm';
 
-// Mock agents data
-const agents = [
-  {
-    id: 1,
-    name: 'Customer Support AI',
-    type: 'Conversational',
-    price: 79,
-    rating: 4.9,
-    downloads: 450,
-    description: '24/7 intelligent customer support with natural language understanding',
-    features: ['Multi-language', 'Sentiment analysis', 'Auto-escalation'],
-    requirements: ['n8n 1.0+', 'AI API access'],
-  },
-  {
-    id: 2,
-    name: 'Sales Intelligence Agent',
-    type: 'Analytics',
-    price: 99,
-    rating: 4.8,
-    downloads: 380,
-    description: 'AI-powered lead scoring and opportunity prediction',
-    features: ['Lead scoring', 'Pipeline analysis', 'Forecasting'],
-    requirements: ['n8n 1.0+', 'CRM integration'],
-  },
-  {
-    id: 3,
-    name: 'Content Research Bot',
-    type: 'Research',
-    price: 69,
-    rating: 4.7,
-    downloads: 320,
-    description: 'Automated content research and topic discovery',
-    features: ['Trend analysis', 'Competitor tracking', 'SEO insights'],
-    requirements: ['n8n 1.0+', 'API keys'],
-  },
-]
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
+    const offset = parseInt(searchParams.get('offset') || '0');
+    const type = searchParams.get('type');
+    const search = searchParams.get('search');
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const type = searchParams.get('type')
+    let query = db.select().from(agents);
+    const conditions = [];
 
-  let filteredAgents = agents
+    if (type && type !== 'All') {
+      conditions.push(eq(agents.type, type));
+    }
 
-  if (type && type !== 'All') {
-    filteredAgents = filteredAgents.filter(a => a.type === type)
+    if (search) {
+      conditions.push(
+        or(
+          like(agents.name, `%${search}%`),
+          like(agents.description, `%${search}%`)
+        )
+      );
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+    }
+
+    const results = await query.orderBy(desc(agents.createdAt)).limit(limit).offset(offset);
+
+    let countQuery = db.select().from(agents);
+    if (conditions.length > 0) {
+      countQuery = countQuery.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+    }
+    const countResult = await countQuery;
+    const count = countResult.length;
+
+    return NextResponse.json({
+      success: true,
+      data: results,
+      count
+    }, { status: 200 });
+  } catch (error) {
+    console.error('GET error:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Internal server error: ' + error,
+      code: 'INTERNAL_ERROR'
+    }, { status: 500 });
   }
-
-  return NextResponse.json({
-    success: true,
-    data: filteredAgents,
-    count: filteredAgents.length,
-  })
 }

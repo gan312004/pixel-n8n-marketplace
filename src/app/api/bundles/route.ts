@@ -1,62 +1,50 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db';
+import { bundles } from '@/db/schema';
+import { like, or, desc } from 'drizzle-orm';
 
-// Mock bundle data
-const bundles = [
-  {
-    id: 1,
-    name: 'Marketing Automation Suite',
-    description: 'Complete marketing automation toolkit',
-    originalPrice: 299,
-    bundlePrice: 179,
-    discount: 40,
-    templates: [
-      'Email Campaign Bot',
-      'Social Media Scheduler',
-      'Content Generator',
-      'Analytics Dashboard',
-      'Lead Magnet Creator',
-    ],
-    saves: 120,
-  },
-  {
-    id: 2,
-    name: 'Sales Acceleration Pack',
-    description: 'Boost your sales with AI-powered tools',
-    originalPrice: 349,
-    bundlePrice: 209,
-    discount: 40,
-    templates: [
-      'Lead Scoring Agent',
-      'CRM Sync Master',
-      'Sales Intelligence Agent',
-      'Proposal Generator',
-      'Follow-up Automation',
-    ],
-    saves: 140,
-  },
-  {
-    id: 3,
-    name: 'AI Agent Starter Kit',
-    description: 'Essential AI agents for automation',
-    originalPrice: 399,
-    bundlePrice: 239,
-    discount: 40,
-    templates: [
-      'Customer Support AI',
-      'Content Research Bot',
-      'Data Analyzer',
-      'Workflow Optimizer',
-      'Sentiment Analyzer',
-    ],
-    saves: 160,
-  },
-]
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
+    const offset = parseInt(searchParams.get('offset') || '0');
 
-export async function GET() {
-  return NextResponse.json({
-    success: true,
-    data: bundles,
-  })
+    let query = db.select().from(bundles).orderBy(desc(bundles.createdAt));
+
+    if (search) {
+      const searchCondition = or(
+        like(bundles.name, `%${search}%`),
+        like(bundles.description, `%${search}%`)
+      );
+      query = db.select().from(bundles).where(searchCondition).orderBy(desc(bundles.createdAt));
+    }
+
+    const results = await query.limit(limit).offset(offset);
+
+    const countQuery = search
+      ? db.select().from(bundles).where(or(
+          like(bundles.name, `%${search}%`),
+          like(bundles.description, `%${search}%`)
+        ))
+      : db.select().from(bundles);
+    
+    const countResult = await countQuery;
+    const totalCount = countResult.length;
+
+    return NextResponse.json({
+      success: true,
+      data: results,
+      count: totalCount
+    }, { status: 200 });
+  } catch (error) {
+    console.error('GET error:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Internal server error: ' + error,
+      code: 'INTERNAL_ERROR'
+    }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -64,28 +52,18 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { bundleId, userId } = body
 
-    const bundle = bundles.find(b => b.id === parseInt(bundleId))
-
-    if (!bundle) {
-      return NextResponse.json({
-        success: false,
-        message: 'Bundle not found',
-      }, { status: 404 })
-    }
-
-    // In production, process payment and grant access
-    const purchase = {
+    const bundleData = {
       id: `bundle_purchase_${Date.now()}`,
       userId,
       bundleId,
-      amount: bundle.bundlePrice,
+      amount: 179,
       status: 'completed',
       purchasedAt: new Date().toISOString(),
     }
 
     return NextResponse.json({
       success: true,
-      data: purchase,
+      data: bundleData,
       message: 'Bundle purchased successfully',
     }, { status: 201 })
   } catch (error) {

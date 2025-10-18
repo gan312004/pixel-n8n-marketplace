@@ -1,4 +1,4 @@
-import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
 
 
 
@@ -11,6 +11,7 @@ export const user = sqliteTable("user", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+  isAdmin: integer("is_admin", { mode: "boolean" }).default(false).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .$defaultFn(() => new Date())
     .notNull(),
@@ -65,4 +66,49 @@ export const verification = sqliteTable("verification", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(
     () => new Date(),
   ),
+});
+
+// Templates table
+export const templates = sqliteTable("templates", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  category: text("category").notNull(),
+  price: integer("price").notNull(),
+  rating: real("rating").default(0).notNull(),
+  downloads: integer("downloads").default(0).notNull(),
+  description: text("description").notNull(),
+  featured: integer("featured", { mode: "boolean" }).default(false).notNull(),
+  features: text("features", { mode: "json" }).notNull(),
+  requirements: text("requirements", { mode: "json" }).notNull(),
+  image: text("image"),
+  createdAt: text("created_at").notNull(),
+});
+
+// Agents table
+export const agents = sqliteTable("agents", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  type: text("type").notNull(),
+  price: integer("price").notNull(),
+  rating: real("rating").default(0).notNull(),
+  downloads: integer("downloads").default(0).notNull(),
+  description: text("description").notNull(),
+  features: text("features", { mode: "json" }).notNull(),
+  requirements: text("requirements", { mode: "json" }).notNull(),
+  image: text("image"),
+  createdAt: text("created_at").notNull(),
+});
+
+// Bundles table
+export const bundles = sqliteTable("bundles", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  originalPrice: integer("original_price").notNull(),
+  bundlePrice: integer("bundle_price").notNull(),
+  discount: integer("discount").notNull(),
+  templates: text("templates", { mode: "json" }).notNull(),
+  saves: integer("saves").notNull(),
+  image: text("image"),
+  createdAt: text("created_at").notNull(),
 });

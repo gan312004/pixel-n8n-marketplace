@@ -1,74 +1,75 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db';
+import { templates } from '@/db/schema';
+import { eq, like, and, or, desc } from 'drizzle-orm';
 
-// Mock template data - in production, this would come from a database
-const templates = [
-  {
-    id: 1,
-    name: 'AI Content Generator',
-    category: 'AI Automation',
-    price: 49,
-    rating: 4.9,
-    downloads: 1200,
-    description: 'Automated content generation with GPT-4 integration',
-    featured: true,
-    features: ['GPT-4 Integration', 'Multi-format output', 'SEO optimization'],
-    requirements: ['n8n 1.0+', 'OpenAI API key'],
-  },
-  {
-    id: 2,
-    name: 'CRM Sync Master',
-    category: 'Data Sync',
-    price: 39,
-    rating: 4.8,
-    downloads: 980,
-    description: 'Synchronize multiple CRM platforms seamlessly',
-    featured: true,
-    features: ['Multi-CRM support', 'Real-time sync', 'Conflict resolution'],
-    requirements: ['n8n 1.0+', 'CRM API access'],
-  },
-  {
-    id: 3,
-    name: 'Email Campaign Bot',
-    category: 'Marketing',
-    price: 59,
-    rating: 4.7,
-    downloads: 850,
-    description: 'Intelligent email marketing automation',
-    featured: false,
-    features: ['A/B testing', 'Segmentation', 'Analytics'],
-    requirements: ['n8n 1.0+', 'Email provider API'],
-  },
-]
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
+    const offset = parseInt(searchParams.get('offset') || '0');
+    const category = searchParams.get('category');
+    const featuredParam = searchParams.get('featured');
+    const search = searchParams.get('search');
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const category = searchParams.get('category')
-  const featured = searchParams.get('featured')
+    let query = db.select().from(templates);
+    const conditions = [];
 
-  let filteredTemplates = templates
+    if (category && category !== 'All') {
+      conditions.push(eq(templates.category, category));
+    }
 
-  if (category && category !== 'All') {
-    filteredTemplates = filteredTemplates.filter(t => t.category === category)
+    if (featuredParam !== null && featuredParam === 'true') {
+      conditions.push(eq(templates.featured, true));
+    }
+
+    if (search) {
+      conditions.push(
+        or(
+          like(templates.name, `%${search}%`),
+          like(templates.description, `%${search}%`)
+        )
+      );
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+    }
+
+    const results = await query
+      .orderBy(desc(templates.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    let countQuery = db.select().from(templates);
+    if (conditions.length > 0) {
+      countQuery = countQuery.where(conditions.length === 1 ? conditions[0] : and(...conditions));
+    }
+    const countResults = await countQuery;
+    const totalCount = countResults.length;
+
+    return NextResponse.json({
+      success: true,
+      data: results,
+      count: totalCount
+    }, { status: 200 });
+
+  } catch (error) {
+    console.error('GET error:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Internal server error: ' + error,
+      code: 'INTERNAL_ERROR'
+    }, { status: 500 });
   }
-
-  if (featured === 'true') {
-    filteredTemplates = filteredTemplates.filter(t => t.featured)
-  }
-
-  return NextResponse.json({
-    success: true,
-    data: filteredTemplates,
-    count: filteredTemplates.length,
-  })
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     
-    // In production, save to database
     const newTemplate = {
-      id: templates.length + 1,
+      id: Date.now(),
       ...body,
       rating: 0,
       downloads: 0,
