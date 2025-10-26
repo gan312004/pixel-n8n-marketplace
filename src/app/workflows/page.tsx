@@ -63,31 +63,31 @@ function CustomNode({ data }: { data: any }) {
               id="input"
               style={{ 
                 background: data.nodeColor || '#6B46C1', 
-                width: 10, 
-                height: 10, 
+                width: 12, 
+                height: 12, 
                 border: '2px solid #fff',
-                left: -5,
+                left: -6,
                 borderRadius: '50%',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
               }} 
             />
             
-            {/* Node Card */}
+            {/* Node Card - Bigger size */}
             <div 
-              className="bg-white dark:bg-white rounded-lg shadow-lg min-w-[180px] max-w-[220px] cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105" 
+              className="bg-white dark:bg-white rounded-lg shadow-lg min-w-[220px] max-w-[280px] cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105" 
               style={{ borderLeft: `4px solid ${data.nodeColor || '#6B46C1'}` }}
             >
-              {/* Node Header */}
-              <div className="px-3 py-2 flex items-center gap-2" style={{ background: data.nodeColor || '#6B46C1' }}>
+              {/* Node Header - Colored */}
+              <div className="px-4 py-3 flex items-center gap-2" style={{ background: data.nodeColor || '#6B46C1' }}>
                 <div className="text-white flex-shrink-0">
                   {getNodeIcon(data.type)}
                 </div>
                 <span className="font-semibold text-sm text-white truncate">{data.name}</span>
               </div>
               
-              {/* Node Body */}
-              <div className="px-3 py-2">
-                <div className="text-xs font-medium text-gray-600">
+              {/* Node Body - Light mode: black bg + white text, Dark mode: white bg + black text */}
+              <div className="px-4 py-3 bg-black dark:bg-white">
+                <div className="text-xs font-medium text-white dark:text-black">
                   {data.typeLabel || 'Node'}
                 </div>
               </div>
@@ -100,10 +100,10 @@ function CustomNode({ data }: { data: any }) {
               id="output"
               style={{ 
                 background: data.nodeColor || '#6B46C1', 
-                width: 10, 
-                height: 10, 
+                width: 12, 
+                height: 12, 
                 border: '2px solid #fff',
-                right: -5,
+                right: -6,
                 borderRadius: '50%',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
               }} 
