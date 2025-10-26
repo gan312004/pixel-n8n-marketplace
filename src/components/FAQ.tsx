@@ -45,10 +45,10 @@ export default function FAQ() {
           className="text-center mb-16"
         >
           <h2 className="pixel-text text-3xl md:text-4xl mb-4">
-            Frequently Asked Questions
+            Have Questions? We've Got Answers
           </h2>
           <p className="text-muted-foreground text-lg">
-            Got questions? We've got answers
+            Everything you need to know about our platform
           </p>
         </motion.div>
 

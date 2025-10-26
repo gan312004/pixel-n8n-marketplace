@@ -9,8 +9,9 @@ import { toast } from 'sonner'
 import LeftSidebar from '@/components/LeftSidebar'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Package, Star, Trophy, Zap, Download, Bot, DollarSign } from 'lucide-react'
+import { Package, Star, Trophy, Zap, Download, Bot, DollarSign, Briefcase, BarChart, Bell, Users, Lock, ArrowRight } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { AuroraBackground, BentoGrid, BentoGridItem } from '@/components/ui/aurora-bento-grid'
 
 export default function DashboardPage() {
   const { data: session, isPending, refetch } = useSession()
@@ -40,6 +41,49 @@ export default function DashboardPage() {
     { label: 'Spent', value: '$0', icon: DollarSign, color: 'text-blue-500', href: '/pricing' },
   ]
 
+  const features = [
+    {
+      icon: <Briefcase className="w-10 h-10 text-white" />,
+      title: 'Template Management',
+      description: 'Organize and manage all your n8n templates in one place.',
+      className: 'md:col-span-4',
+      gradientFrom: 'from-primary',
+      gradientTo: 'to-deep-purple',
+    },
+    {
+      icon: <BarChart className="w-10 h-10 text-white" />,
+      title: 'Analytics Dashboard',
+      description: 'Track your template usage and performance metrics.',
+      className: 'md:col-span-2',
+      gradientFrom: 'from-neon-green',
+      gradientTo: 'to-green-600',
+    },
+    {
+      icon: <Bell className="w-10 h-10 text-white" />,
+      title: 'Smart Notifications',
+      description: 'Get notified about new templates and updates.',
+      className: 'md:col-span-2',
+      gradientFrom: 'from-yellow-500',
+      gradientTo: 'to-amber-600',
+    },
+    {
+      icon: <Users className="w-10 h-10 text-white" />,
+      title: 'AI Agents',
+      description: 'Access powerful AI agents for automation.',
+      className: 'md:col-span-2',
+      gradientFrom: 'from-purple-500',
+      gradientTo: 'to-violet-600',
+    },
+    {
+      icon: <Lock className="w-10 h-10 text-white" />,
+      title: 'Secure & Private',
+      description: 'Your data is protected with enterprise-grade security.',
+      className: 'md:col-span-2',
+      gradientFrom: 'from-red-500',
+      gradientTo: 'to-orange-600',
+    },
+  ]
+
   if (isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -56,7 +100,7 @@ export default function DashboardPage() {
     <>
       <LeftSidebar />
       <div className="min-h-screen pt-32 pb-20 px-4 pl-32">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -96,12 +140,62 @@ export default function DashboardPage() {
             ))}
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Aurora Bento Grid Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-12"
+          >
+            <div className="text-center mb-8">
+              <h2 className="pixel-text text-3xl md:text-4xl mb-4 bg-gradient-to-r from-primary via-deep-purple to-neon-green bg-clip-text text-transparent">
+                Features That Inspire
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Discover everything you can do with AutoMart
+              </p>
+            </div>
+
+            <div className="relative bg-background rounded-2xl overflow-hidden">
+              <AuroraBackground />
+              <BentoGrid>
+                {features.map((feature, i) => (
+                  <BentoGridItem
+                    key={i}
+                    className={feature.className}
+                    gradientFrom={feature.gradientFrom}
+                    gradientTo={feature.gradientTo}
+                  >
+                    <div className="mb-4">{feature.icon}</div>
+                    <div className="flex flex-col flex-grow">
+                      <h3 className="text-xl font-bold text-white mb-2">
+                        {feature.title}
+                      </h3>
+                      <p className="text-gray-200 text-sm flex-grow">
+                        {feature.description}
+                      </p>
+                    </div>
+                    <div className="mt-4">
+                      <a
+                        href="#"
+                        className="text-white font-semibold text-sm inline-flex items-center group"
+                      >
+                        Learn more
+                        <ArrowRight className="ml-1 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      </a>
+                    </div>
+                  </BentoGridItem>
+                ))}
+              </BentoGrid>
+            </div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
             {/* Getting Started */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               className="bg-white rounded-lg p-6 pixel-shadow"
             >
               <h2 className="pixel-text text-xl mb-6">Getting Started</h2>
@@ -136,7 +230,7 @@ export default function DashboardPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
               className="bg-white rounded-lg p-6 pixel-shadow"
             >
               <h2 className="pixel-text text-xl mb-6">Quick Actions</h2>
@@ -188,8 +282,8 @@ export default function DashboardPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-12 bg-gradient-to-r from-primary to-deep-purple rounded-lg p-8 text-white pixel-shadow"
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="bg-gradient-to-r from-primary to-deep-purple rounded-lg p-8 text-white pixel-shadow"
           >
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div>

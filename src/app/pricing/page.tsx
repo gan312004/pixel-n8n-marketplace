@@ -7,7 +7,9 @@ export default function PricingPageRoute() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <PricingPage />
+      <div className="pt-24">
+        <PricingPage />
+      </div>
       
       {/* Footer */}
       <footer className="border-t py-12 px-4">
