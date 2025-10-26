@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -12,6 +12,7 @@ import ReactFlow, {
   Edge,
   Node,
   BackgroundVariant,
+  ReactFlowProvider,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import DashboardNavbar from '@/components/DashboardNavbar'
@@ -23,7 +24,7 @@ import { toast } from 'sonner'
 const initialNodes: Node[] = []
 const initialEdges: Edge[] = []
 
-export default function WorkflowsPage() {
+function WorkflowCanvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [jsonInput, setJsonInput] = useState('')
@@ -43,21 +44,38 @@ export default function WorkflowsPage() {
         const parsedNodes: Node[] = data.nodes.map((node: any, index: number) => {
           const nodeId = node.id || node.name || `node-${index}`
           const nodeName = node.name || node.type || 'Node'
-          const nodeType = node.type || 'workflow'
+          
+          // Handle position - n8n uses [x, y] array format
+          let position = { x: 100 + index * 250, y: 100 + (index % 3) * 150 }
+          if (node.position) {
+            if (Array.isArray(node.position) && node.position.length >= 2) {
+              position = { x: node.position[0], y: node.position[1] }
+            } else if (typeof node.position === 'object' && node.position.x !== undefined) {
+              position = node.position
+            }
+          }
           
           return {
             id: String(nodeId),
             type: 'default',
-            position: node.position || { x: 100 + index * 250, y: 100 + (index % 3) * 150 },
+            position,
             data: { 
-              label: nodeName
+              label: (
+                <div className="text-center">
+                  <div className="font-semibold text-sm">{nodeName}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {node.type || 'workflow'}
+                  </div>
+                </div>
+              )
             },
+            draggable: true,
             style: {
               background: '#fff',
               border: '2px solid #6B46C1',
               borderRadius: '8px',
               padding: '12px 16px',
-              minWidth: 160,
+              minWidth: 180,
               fontSize: '14px',
               fontWeight: '600',
             }
@@ -111,7 +129,7 @@ export default function WorkflowsPage() {
         id: node.id,
         name: typeof node.data.label === 'string' ? node.data.label : `Node ${index + 1}`,
         type: 'workflow',
-        position: node.position,
+        position: [node.position.x, node.position.y],
         parameters: {}
       })),
       connections: edges.reduce((acc: any, edge) => {
@@ -146,6 +164,28 @@ export default function WorkflowsPage() {
     setEdges([])
     toast.success('Canvas cleared!')
   }
+
+  const handleDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault()
+      
+      try {
+        const data = event.dataTransfer.getData('application/json')
+        if (data) {
+          const jsonData = JSON.parse(data)
+          handleImportJSON()
+        }
+      } catch (error) {
+        console.error('Drop error:', error)
+      }
+    },
+    []
+  )
+
+  const handleDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'copy'
+  }, [])
 
   return (
     <>
@@ -210,7 +250,12 @@ export default function WorkflowsPage() {
             </div>
           )}
 
-          <div className="relative bg-card rounded-lg border shadow-lg overflow-hidden" style={{ height: '600px' }}>
+          <div 
+            className="relative bg-card rounded-lg border shadow-lg overflow-hidden" 
+            style={{ height: '600px', width: '100%' }}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+          >
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -221,6 +266,12 @@ export default function WorkflowsPage() {
               fitViewOptions={{ padding: 0.2 }}
               minZoom={0.1}
               maxZoom={2}
+              nodesDraggable={true}
+              nodesConnectable={true}
+              elementsSelectable={true}
+              panOnDrag={true}
+              zoomOnScroll={true}
+              preventScrolling={true}
             >
               <Controls />
               <MiniMap
@@ -258,5 +309,13 @@ export default function WorkflowsPage() {
         </div>
       </div>
     </>
+  )
+}
+
+export default function WorkflowsPage() {
+  return (
+    <ReactFlowProvider>
+      <WorkflowCanvas />
+    </ReactFlowProvider>
   )
 }

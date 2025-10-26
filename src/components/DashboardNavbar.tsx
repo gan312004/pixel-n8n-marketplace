@@ -21,12 +21,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+} from '@/components/ui/dialog'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useSession, authClient } from '@/lib/auth-client'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { Search, Settings, User, LogOut, LayoutDashboard } from 'lucide-react'
+import { Search, Settings, User, LogOut, LayoutDashboard, FileText, Bot, Package, DollarSign, Workflow } from 'lucide-react'
 
 const navigationLinks = [
   {
@@ -34,38 +46,100 @@ const navigationLinks = [
     items: [
       { href: '/templates', label: 'Templates' },
       { href: '/agents', label: 'Agents' },
+      { href: '/workflows', label: 'Workflows' },
       { href: '/bundles', label: 'Bundles' },
       { href: '/pricing', label: 'Pricing' },
     ],
   },
 ]
 
+const searchItems = [
+  { icon: FileText, label: 'Templates', href: '/templates', description: 'Browse n8n templates' },
+  { icon: Bot, label: 'Agents', href: '/agents', description: 'Explore AI agents' },
+  { icon: Workflow, label: 'Workflows', href: '/workflows', description: 'Visualize workflows' },
+  { icon: Package, label: 'Bundles', href: '/bundles', description: 'Bundle deals and offers' },
+  { icon: DollarSign, label: 'Pricing', href: '/pricing', description: 'View pricing plans' },
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard', description: 'Go to dashboard' },
+]
+
 export function SearchBar({ className }: React.ComponentProps<'button'>) {
+  const [open, setOpen] = React.useState(false)
+  const router = useRouter()
+
   const isMac =
     typeof window !== 'undefined' &&
     typeof navigator !== 'undefined' &&
     navigator.platform?.toUpperCase().includes('MAC')
 
-  return (
-    <Button
-      variant="secondary"
-      className={cn(
-        'bg-muted dark:bg-muted relative h-9 w-full justify-start pl-3 pr-12 font-normal shadow-sm border border-border',
-        className
-      )}
-    >
-      <Search className="mr-2 h-4 w-4 text-muted-foreground" />
-      <span className="text-muted-foreground">Search...</span>
+  // Keyboard shortcut handler
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
+      }
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
-      <div className="absolute top-1.5 right-1.5 hidden gap-1 sm:flex">
-        <kbd className="pointer-events-none flex h-6 items-center justify-center gap-1 rounded border border-border bg-background px-1.5 font-sans text-[0.7rem] font-medium text-muted-foreground">
-          {isMac ? '⌘' : 'Ctrl'}
-        </kbd>
-        <kbd className="pointer-events-none flex h-6 w-6 items-center justify-center rounded border border-border bg-background font-sans text-[0.7rem] font-medium text-muted-foreground">
-          K
-        </kbd>
-      </div>
-    </Button>
+  const handleSelect = (href: string) => {
+    setOpen(false)
+    router.push(href)
+  }
+
+  return (
+    <>
+      <Button
+        variant="secondary"
+        onClick={() => setOpen(true)}
+        className={cn(
+          'bg-muted dark:bg-muted relative h-9 w-full justify-start pl-3 pr-12 font-normal shadow-sm border border-border',
+          className
+        )}
+      >
+        <Search className="mr-2 h-4 w-4 text-muted-foreground" />
+        <span className="text-muted-foreground">Search...</span>
+
+        <div className="absolute top-1.5 right-1.5 hidden gap-1 sm:flex">
+          <kbd className="pointer-events-none flex h-6 items-center justify-center gap-1 rounded border border-border bg-background px-1.5 font-sans text-[0.7rem] font-medium text-muted-foreground">
+            {isMac ? '⌘' : 'Ctrl'}
+          </kbd>
+          <kbd className="pointer-events-none flex h-6 w-6 items-center justify-center rounded border border-border bg-background font-sans text-[0.7rem] font-medium text-muted-foreground">
+            K
+          </kbd>
+        </div>
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="p-0 gap-0 max-w-2xl">
+          <Command className="rounded-lg border-0">
+            <CommandInput placeholder="Search pages, templates, agents..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Navigation">
+                {searchItems.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <CommandItem
+                      key={item.href}
+                      onSelect={() => handleSelect(item.href)}
+                      className="cursor-pointer"
+                    >
+                      <Icon className="mr-2 h-4 w-4" />
+                      <div className="flex flex-col">
+                        <span>{item.label}</span>
+                        <span className="text-xs text-muted-foreground">{item.description}</span>
+                      </div>
+                    </CommandItem>
+                  )
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
