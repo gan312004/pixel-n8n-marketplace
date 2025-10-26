@@ -6,6 +6,7 @@ import { Package, Star, Zap, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import LeftSidebar from '@/components/LeftSidebar'
+import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 interface Bundle {
   id: number
@@ -44,7 +45,8 @@ export default function BundlesPage() {
   return (
     <>
       <LeftSidebar />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-20 pb-20 px-4 pl-32">
+      <AppleStyleDock />
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-32 pb-24 px-4 pl-32">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div

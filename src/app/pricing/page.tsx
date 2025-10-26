@@ -2,12 +2,14 @@
 
 import PricingPage from '@/components/ui/pricing-page'
 import Navbar from '@/components/Navbar'
+import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 export default function PricingPageRoute() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <div className="pt-24">
+      <AppleStyleDock />
+      <div className="pt-24 pb-24">
         <PricingPage />
       </div>
       

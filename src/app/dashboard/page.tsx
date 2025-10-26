@@ -7,6 +7,7 @@ import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import LeftSidebar from '@/components/LeftSidebar'
+import { AppleStyleDock } from '@/components/AppleStyleDock'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Package, Star, Trophy, Zap, Download, Bot, DollarSign, Briefcase, BarChart, Bell, Users, Lock, ArrowRight } from 'lucide-react'
@@ -104,7 +105,8 @@ export default function DashboardPage() {
   return (
     <>
       <LeftSidebar />
-      <div className="min-h-screen pt-24 pb-20 px-4 pl-32 bg-background transition-colors duration-300">
+      <AppleStyleDock />
+      <div className="min-h-screen pt-24 pb-24 px-4 pl-32 bg-background transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div

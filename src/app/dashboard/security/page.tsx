@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from '@/lib/auth-client'
 import LeftSidebar from '@/components/LeftSidebar'
+import { AppleStyleDock } from '@/components/AppleStyleDock'
 import { motion } from 'framer-motion'
 import { Lock, Shield, Key, AlertTriangle } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
@@ -41,7 +42,8 @@ export default function SecurityPage() {
   return (
     <>
       <LeftSidebar />
-      <div className="min-h-screen pt-24 pb-20 px-4 pl-32 bg-background transition-colors duration-300">
+      <AppleStyleDock />
+      <div className="min-h-screen pt-24 pb-24 px-4 pl-32 bg-background transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

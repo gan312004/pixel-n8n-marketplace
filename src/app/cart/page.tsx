@@ -8,6 +8,7 @@ import { Trash2, ShoppingCart, ArrowRight, Plus, Minus } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import LeftSidebar from '@/components/LeftSidebar'
+import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 interface CartItem {
   id: number
@@ -66,7 +67,8 @@ export default function CartPage() {
   return (
     <>
       <LeftSidebar />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-32 pb-20 px-4 pl-32">
+      <AppleStyleDock />
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-32 pb-24 px-4 pl-32">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

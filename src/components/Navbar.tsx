@@ -112,16 +112,16 @@ export default function Navbar() {
       }>
 
       <div
-        className="dark:bg-white rounded-2xl px-6 py-4 border border-border smooth-hover !text-slate-500 !bg-slate-400"
+        className="bg-white dark:bg-white rounded-2xl px-6 py-4 border border-border smooth-hover"
         style={{
           boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), 4px 4px 0px rgba(0, 0, 0, 0.1)'
         }}>
 
         <div className="flex items-center justify-between gap-4">
-          {/* Logo */}
+          {/* Logo - Fixed size and consistent colors */}
           <Link href="/" className="flex items-center gap-3 smooth-hover hover:scale-105 flex-shrink-0">
             <div className="w-12 h-12 bg-gradient-to-br from-deep-purple to-black rounded-xl flex items-center justify-center pixel-shadow">
-              <span className="pixel-text !text-[#21530d] !text-base !w-16 !h-5" style={{ fontSize: '10px' }}>Auto</span>
+              <span className="pixel-text text-neon-green" style={{ fontSize: '10px' }}>Auto</span>
             </div>
             <span className="pixel-text text-sm hidden sm:block text-black">Mart</span>
           </Link>
