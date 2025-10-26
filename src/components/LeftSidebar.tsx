@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSession, authClient } from '@/lib/auth-client'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export default function LeftSidebar() {
   const pathname = usePathname()
@@ -43,7 +44,7 @@ export default function LeftSidebar() {
       className="fixed left-6 top-1/2 -translate-y-1/2 z-50"
     >
       <div 
-        className="backdrop-blur-lg bg-white/90 rounded-2xl shadow-2xl border border-white/40 p-4 flex flex-col gap-1.5"
+        className="backdrop-blur-lg bg-white/90 dark:bg-white/90 rounded-2xl shadow-2xl border border-white/40 dark:border-white/40 p-4 flex flex-col gap-1.5"
         style={{ 
           boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), 4px 4px 0px rgba(0, 0, 0, 0.1)' 
         }}
@@ -101,7 +102,7 @@ export default function LeftSidebar() {
                     className={`flex items-center justify-center w-12 h-12 rounded-xl transition-colors ${
                       isActive 
                         ? 'bg-primary text-white shadow-lg' 
-                        : 'hover:bg-white/50 text-foreground'
+                        : 'hover:bg-white/50 dark:hover:bg-white/50 text-foreground dark:text-black'
                     }`}
                   >
                     <Icon className="w-6 h-6" />
@@ -142,7 +143,7 @@ export default function LeftSidebar() {
                 <motion.div
                   whileHover={{ x: 10, scale: 1.2 }}
                   transition={{ duration: 0.15 }}
-                  className="flex items-center justify-center w-12 h-12 rounded-xl hover:bg-white/50 text-foreground transition-colors"
+                  className="flex items-center justify-center w-12 h-12 rounded-xl hover:bg-white/50 dark:hover:bg-white/50 text-foreground dark:text-black transition-colors"
                 >
                   <User className="w-6 h-6" />
                 </motion.div>
@@ -173,7 +174,7 @@ export default function LeftSidebar() {
                 onClick={() => setShowSettings(!showSettings)}
                 whileHover={{ x: 10, scale: 1.2 }}
                 transition={{ duration: 0.15 }}
-                className="flex items-center justify-center w-12 h-12 rounded-xl hover:bg-white/50 text-foreground transition-colors"
+                className="flex items-center justify-center w-12 h-12 rounded-xl hover:bg-white/50 dark:hover:bg-white/50 text-foreground dark:text-black transition-colors"
               >
                 <Settings className="w-6 h-6" />
               </motion.button>
@@ -236,7 +237,7 @@ export default function LeftSidebar() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute left-full ml-4 bottom-0 bg-white rounded-lg shadow-xl border border-border p-2 min-w-[200px]"
+            className="absolute left-full ml-4 bottom-0 bg-white rounded-lg shadow-xl border border-border p-3 min-w-[200px]"
             style={{ 
               boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1)' 
             }}
@@ -248,15 +249,10 @@ export default function LeftSidebar() {
             >
               Dashboard
             </Link>
-            <button 
-              onClick={() => {
-                document.documentElement.classList.toggle('dark')
-                setShowSettings(false)
-              }}
-              className="w-full text-left px-4 py-2 rounded-lg smooth-hover hover:bg-muted text-sm font-medium text-black"
-            >
-              Toggle Theme
-            </button>
+            <div className="px-4 py-3">
+              <p className="text-xs text-gray-600 mb-2 font-medium">Theme</p>
+              <ThemeToggle />
+            </div>
             <div className="h-px bg-border my-1" />
             <button 
               onClick={handleSignOut}
