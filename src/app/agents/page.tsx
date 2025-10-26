@@ -69,7 +69,7 @@ export default function AgentsPage() {
   return (
     <>
       <DashboardNavbar />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 px-4 !w-full !h-[1276px]">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 px-4 !w-full !h-[1269px]">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
