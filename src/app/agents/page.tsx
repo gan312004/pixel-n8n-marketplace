@@ -1,58 +1,58 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from 'react'
-import DashboardNavbar from '@/components/DashboardNavbar'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Search, Filter } from 'lucide-react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Bot, Star, Zap } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import DashboardNavbar from '@/components/DashboardNavbar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search, Filter } from 'lucide-react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Bot, Star, Zap } from 'lucide-react';
 
 interface Agent {
-  id: number
-  name: string
-  description: string
-  type: string
-  price: number
-  rating: number
-  downloads: number
-  features: string[] | string
-  keyPoints?: string[] | string
-  whyBuyIt?: string
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  price: number;
+  rating: number;
+  downloads: number;
+  features: string[] | string;
+  keyPoints?: string[] | string;
+  whyBuyIt?: string;
 }
 
 export default function AgentsPage() {
-  const [agents, setAgents] = useState<Agent[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('/api/agents')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          // Parse JSON strings from database
-          const parsedAgents = data.data.map((agent: Agent) => ({
-            ...agent,
-            features: typeof agent.features === 'string' 
-              ? JSON.parse(agent.features) 
-              : agent.features || [],
-            keyPoints: agent.keyPoints 
-              ? (typeof agent.keyPoints === 'string' ? JSON.parse(agent.keyPoints) : agent.keyPoints)
-              : []
-          }))
-          setAgents(parsedAgents)
-        }
-      })
-      .catch(error => console.error('Error fetching agents:', error))
-      .finally(() => setLoading(false))
-  }, [])
+    fetch('/api/agents').
+    then((res) => res.json()).
+    then((data) => {
+      if (data.success) {
+        // Parse JSON strings from database
+        const parsedAgents = data.data.map((agent: Agent) => ({
+          ...agent,
+          features: typeof agent.features === 'string' ?
+          JSON.parse(agent.features) :
+          agent.features || [],
+          keyPoints: agent.keyPoints ?
+          typeof agent.keyPoints === 'string' ? JSON.parse(agent.keyPoints) : agent.keyPoints :
+          []
+        }));
+        setAgents(parsedAgents);
+      }
+    }).
+    catch((error) => console.error('Error fetching agents:', error)).
+    finally(() => setLoading(false));
+  }, []);
 
-  const filteredAgents = agents.filter(agent =>
-    agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    agent.description.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredAgents = agents.filter((agent) =>
+  agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  agent.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const getEmoji = (type: string) => {
     const emojiMap: Record<string, string> = {
@@ -62,22 +62,22 @@ export default function AgentsPage() {
       'Support': '💬',
       'Sales': '💼',
       'Marketing': '📧'
-    }
-    return emojiMap[type] || '🤖'
-  }
+    };
+    return emojiMap[type] || '🤖';
+  };
 
   return (
     <>
       <DashboardNavbar />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 px-4 !w-full !h-[1271px]">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-12"
-          >
+            className="mb-12">
+
             <h1 className="pixel-text text-4xl md:text-5xl mb-4">
               AI <span className="text-primary">Agents</span>
             </h1>
@@ -91,8 +91,8 @@ export default function AgentsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-8"
-          >
+            className="mb-8">
+
             <div className="relative max-w-xl">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
@@ -100,26 +100,26 @@ export default function AgentsPage() {
                 placeholder="Search AI agents..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+                className="pl-10" />
+
             </div>
           </motion.div>
 
           {/* Agents Grid */}
-          {loading ? (
-            <div className="text-center py-12">
+          {loading ?
+          <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
               <p className="text-muted-foreground mt-4">Loading agents...</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredAgents.map((agent, idx) => (
-                <motion.div
-                  key={agent.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: idx * 0.05 }}
-                >
+            </div> :
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {filteredAgents.map((agent, idx) =>
+            <motion.div
+              key={agent.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: idx * 0.05 }}>
+
                   <Link href={`/agents/${agent.id}`}>
                     <div className="bg-white rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105 h-full">
                       <div className="flex items-start gap-4 mb-4">
@@ -142,12 +142,12 @@ export default function AgentsPage() {
                       </div>
 
                       <div className="space-y-2 mb-4">
-                        {Array.isArray(agent.features) && agent.features.map((feature, i) => (
-                          <div key={i} className="flex items-center gap-2 text-sm">
+                        {Array.isArray(agent.features) && agent.features.map((feature, i) =>
+                    <div key={i} className="flex items-center gap-2 text-sm">
                             <Zap className="w-4 h-4 text-neon-green flex-shrink-0" />
                             <span>{feature}</span>
                           </div>
-                        ))}
+                    )}
                       </div>
 
                       <div className="flex items-center justify-between pt-4 border-t">
@@ -159,19 +159,19 @@ export default function AgentsPage() {
                     </div>
                   </Link>
                 </motion.div>
-              ))}
+            )}
             </div>
-          )}
+          }
 
-          {!loading && filteredAgents.length === 0 && (
-            <div className="text-center py-12">
+          {!loading && filteredAgents.length === 0 &&
+          <div className="text-center py-12">
               <Bot className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
               <h3 className="text-xl font-bold mb-2">No agents found</h3>
               <p className="text-muted-foreground">Try a different search term</p>
             </div>
-          )}
+          }
         </div>
       </div>
-    </>
-  )
+    </>);
+
 }
