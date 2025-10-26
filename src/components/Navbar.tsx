@@ -112,7 +112,7 @@ export default function Navbar() {
       }>
 
       <div
-        className="bg-white dark:bg-white rounded-2xl px-6 py-4 border border-border smooth-hover"
+        className="dark:bg-white rounded-2xl px-6 py-4 border border-border smooth-hover !text-slate-500 !bg-slate-400"
         style={{
           boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), 4px 4px 0px rgba(0, 0, 0, 0.1)'
         }}>
