@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -21,13 +21,20 @@ import 'reactflow/dist/style.css'
 import DashboardNavbar from '@/components/DashboardNavbar'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Upload, Download, Trash2, Zap, Mail, Database, Globe, Code, Settings } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Upload, Download, Trash2, Zap, Mail, Database, Globe, Code, Settings, Maximize, Minimize, Palette, FileUp } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 const initialNodes: Node[] = []
 const initialEdges: Edge[] = []
 
-// Custom node component that looks like n8n
+// Custom node component with minimal details
 function CustomNode({ data }: { data: any }) {
   const getNodeIcon = (type: string) => {
     if (type.includes('start')) return <Zap className="w-4 h-4" />
@@ -44,46 +51,34 @@ function CustomNode({ data }: { data: any }) {
         type="target" 
         position={Position.Left} 
         style={{ 
-          background: '#6B46C1', 
+          background: data.nodeColor || '#6B46C1', 
           width: 10, 
           height: 10, 
           border: '2px solid #fff',
           left: -5 
         }} 
       />
-      <div className="bg-white border-2 border-[#6B46C1] rounded-lg shadow-lg min-w-[200px]">
-        {/* Node Header */}
-        <div className="bg-[#6B46C1] text-white px-3 py-2 rounded-t-md flex items-center gap-2">
-          {getNodeIcon(data.type)}
-          <span className="font-semibold text-sm truncate">{data.name}</span>
+      <div className="bg-white rounded-lg shadow-lg min-w-[180px]" style={{ borderLeft: `4px solid ${data.nodeColor || '#6B46C1'}` }}>
+        {/* Node Header - Compact */}
+        <div className="px-3 py-2 flex items-center gap-2" style={{ background: data.nodeColor || '#6B46C1' }}>
+          <div className="text-white">
+            {getNodeIcon(data.type)}
+          </div>
+          <span className="font-semibold text-sm text-white truncate">{data.name}</span>
         </div>
         
-        {/* Node Body */}
-        <div className="px-3 py-2 space-y-1">
-          <div className="text-xs font-medium text-gray-600">
+        {/* Node Body - Summary Only */}
+        <div className="px-3 py-2">
+          <div className="text-xs font-medium text-gray-500">
             {data.typeLabel || 'Node'}
           </div>
-          {data.description && (
-            <div className="text-xs text-gray-500 line-clamp-2">
-              {data.description}
-            </div>
-          )}
-          {data.parameters && Object.keys(data.parameters).length > 0 && (
-            <div className="text-xs text-gray-400 mt-2 pt-2 border-t">
-              {Object.entries(data.parameters).slice(0, 2).map(([key, value]: [string, any]) => (
-                <div key={key} className="truncate">
-                  <span className="font-medium">{key}:</span> {String(value)}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
       <Handle 
         type="source" 
         position={Position.Right} 
         style={{ 
-          background: '#6B46C1', 
+          background: data.nodeColor || '#6B46C1', 
           width: 10, 
           height: 10, 
           border: '2px solid #fff',
@@ -105,9 +100,9 @@ function getNodeTypeLabel(type: string): string {
     'n8n-nodes-base.httpRequest': 'HTTP Request',
     'n8n-nodes-base.webhook': 'Webhook',
     'n8n-nodes-base.set': 'Set Values',
-    'n8n-nodes-base.if': 'Conditional Logic',
+    'n8n-nodes-base.if': 'Conditional',
     'n8n-nodes-base.switch': 'Switch',
-    'n8n-nodes-base.code': 'Code Execution',
+    'n8n-nodes-base.code': 'Code',
     'n8n-nodes-base.function': 'Function',
     'n8n-nodes-base.emailSend': 'Send Email',
     'n8n-nodes-base.gmail': 'Gmail',
@@ -121,150 +116,139 @@ function getNodeTypeLabel(type: string): string {
   return typeMap[type] || type.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || 'Node'
 }
 
-// Helper to get node description from parameters
-function getNodeDescription(node: any): string {
-  const params = node.parameters || {}
-  const type = node.type || ''
-  
-  if (type.includes('start')) {
-    return 'Triggers the workflow execution'
-  }
-  if (type.includes('httpRequest')) {
-    const method = params.method || 'GET'
-    const url = params.url || 'URL not set'
-    return `${method} request to ${url}`
-  }
-  if (type.includes('webhook')) {
-    return `Listens for incoming webhook calls at ${params.path || '/webhook'}`
-  }
-  if (type.includes('set')) {
-    const values = params.values || {}
-    return `Sets ${Object.keys(values).length || 0} field(s)`
-  }
-  if (type.includes('if')) {
-    return `Evaluates condition and routes flow`
-  }
-  if (type.includes('code') || type.includes('function')) {
-    return `Executes custom JavaScript code`
-  }
-  if (type.includes('email') || type.includes('gmail')) {
-    const to = params.toEmail || params.to || 'recipient'
-    return `Sends email to ${to}`
-  }
-  if (type.includes('database') || type.includes('postgres') || type.includes('mysql')) {
-    const operation = params.operation || 'query'
-    return `Performs ${operation} operation`
-  }
-  if (type.includes('googleSheets')) {
-    const operation = params.operation || 'read'
-    return `${operation} Google Sheets data`
-  }
-  if (type.includes('slack')) {
-    return `Sends message to Slack channel`
-  }
-  
-  return 'Processes workflow data'
-}
-
 function WorkflowCanvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [jsonInput, setJsonInput] = useState('')
   const [showImport, setShowImport] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [nodeColor, setNodeColor] = useState('#6B46C1')
+  const [edgeColor, setEdgeColor] = useState('#6B46C1')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const onConnect = useCallback(
-    (params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    (params: Connection | Edge) => setEdges((eds) => addEdge({
+      ...params,
+      animated: true,
+      style: { stroke: edgeColor, strokeWidth: 2.5 },
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: edgeColor,
+        width: 20,
+        height: 20,
+      },
+    }, eds)),
+    [setEdges, edgeColor]
   )
+
+  const parseWorkflowJSON = (data: any) => {
+    if (data.nodes && Array.isArray(data.nodes)) {
+      const parsedNodes: Node[] = data.nodes.map((node: any, index: number) => {
+        const nodeId = String(node.name || node.id || `node-${index}`)
+        const nodeName = node.name || node.type || 'Node'
+        const nodeType = node.type || 'workflow'
+        
+        let position = { x: 100 + index * 300, y: 100 + (index % 3) * 180 }
+        if (node.position) {
+          if (Array.isArray(node.position) && node.position.length >= 2) {
+            position = { x: node.position[0], y: node.position[1] }
+          } else if (typeof node.position === 'object' && node.position.x !== undefined) {
+            position = node.position
+          }
+        }
+        
+        return {
+          id: nodeId,
+          type: 'custom',
+          position,
+          data: { 
+            name: nodeName,
+            type: nodeType,
+            typeLabel: getNodeTypeLabel(nodeType),
+            nodeColor: nodeColor,
+            parameters: node.parameters || {},
+          },
+          draggable: true,
+        }
+      })
+
+      const parsedEdges: Edge[] = []
+      
+      if (data.connections) {
+        Object.keys(data.connections).forEach((sourceName: string) => {
+          const connections = data.connections[sourceName]
+          
+          if (connections.main && Array.isArray(connections.main)) {
+            connections.main.forEach((connArray: any[], outputIndex: number) => {
+              if (Array.isArray(connArray)) {
+                connArray.forEach((target: any, targetIndex: number) => {
+                  if (target && target.node) {
+                    parsedEdges.push({
+                      id: `e-${sourceName}-${target.node}-${outputIndex}-${targetIndex}`,
+                      source: String(sourceName),
+                      target: String(target.node),
+                      type: 'default',
+                      animated: true,
+                      style: { 
+                        stroke: edgeColor, 
+                        strokeWidth: 2.5 
+                      },
+                      markerEnd: {
+                        type: MarkerType.ArrowClosed,
+                        color: edgeColor,
+                        width: 20,
+                        height: 20,
+                      },
+                    })
+                  }
+                })
+              }
+            })
+          }
+        })
+      }
+
+      setNodes(parsedNodes)
+      setEdges(parsedEdges)
+      toast.success(`Workflow imported! ${parsedNodes.length} nodes, ${parsedEdges.length} connections`)
+    } else {
+      toast.error('Invalid workflow format. Please provide a JSON with "nodes" array.')
+    }
+  }
 
   const handleImportJSON = () => {
     try {
       const data = JSON.parse(jsonInput)
-      
-      // Parse n8n-style JSON workflow
-      if (data.nodes && Array.isArray(data.nodes)) {
-        const parsedNodes: Node[] = data.nodes.map((node: any, index: number) => {
-          // n8n uses 'name' as the unique identifier in connections
-          const nodeId = String(node.name || node.id || `node-${index}`)
-          const nodeName = node.name || node.type || 'Node'
-          const nodeType = node.type || 'workflow'
-          
-          // Handle position - n8n uses [x, y] array format
-          let position = { x: 100 + index * 300, y: 100 + (index % 3) * 180 }
-          if (node.position) {
-            if (Array.isArray(node.position) && node.position.length >= 2) {
-              position = { x: node.position[0], y: node.position[1] }
-            } else if (typeof node.position === 'object' && node.position.x !== undefined) {
-              position = node.position
-            }
-          }
-          
-          return {
-            id: nodeId,
-            type: 'custom',
-            position,
-            data: { 
-              name: nodeName,
-              type: nodeType,
-              typeLabel: getNodeTypeLabel(nodeType),
-              description: getNodeDescription(node),
-              parameters: node.parameters || {},
-            },
-            draggable: true,
-          }
-        })
-
-        const parsedEdges: Edge[] = []
-        
-        // Parse connections - n8n uses node names as identifiers
-        if (data.connections) {
-          Object.keys(data.connections).forEach((sourceName: string) => {
-            const connections = data.connections[sourceName]
-            
-            if (connections.main && Array.isArray(connections.main)) {
-              connections.main.forEach((connArray: any[], outputIndex: number) => {
-                if (Array.isArray(connArray)) {
-                  connArray.forEach((target: any, targetIndex: number) => {
-                    if (target && target.node) {
-                      parsedEdges.push({
-                        id: `e-${sourceName}-${target.node}-${outputIndex}-${targetIndex}`,
-                        source: String(sourceName),
-                        target: String(target.node),
-                        type: 'default',
-                        animated: true,
-                        style: { 
-                          stroke: '#6B46C1', 
-                          strokeWidth: 2.5 
-                        },
-                        markerEnd: {
-                          type: MarkerType.ArrowClosed,
-                          color: '#6B46C1',
-                          width: 20,
-                          height: 20,
-                        },
-                      })
-                    }
-                  })
-                }
-              })
-            }
-          })
-        }
-
-        console.log('Parsed nodes:', parsedNodes)
-        console.log('Parsed edges:', parsedEdges)
-
-        setNodes(parsedNodes)
-        setEdges(parsedEdges)
-        setShowImport(false)
-        setJsonInput('')
-        toast.success(`Workflow imported! ${parsedNodes.length} nodes, ${parsedEdges.length} connections`)
-      } else {
-        toast.error('Invalid workflow format. Please provide a JSON with "nodes" array.')
-      }
+      parseWorkflowJSON(data)
+      setShowImport(false)
+      setJsonInput('')
     } catch (error) {
       console.error('Import error:', error)
       toast.error('Invalid JSON format. Please check your input.')
+    }
+  }
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string
+        const data = JSON.parse(content)
+        parseWorkflowJSON(data)
+        toast.success('File imported successfully!')
+      } catch (error) {
+        console.error('File import error:', error)
+        toast.error('Invalid JSON file. Please check the file format.')
+      }
+    }
+    reader.readAsText(file)
+    
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
     }
   }
 
@@ -310,47 +294,126 @@ function WorkflowCanvas() {
     toast.success('Canvas cleared!')
   }
 
-  const handleDrop = useCallback(
-    (event: React.DragEvent) => {
-      event.preventDefault()
-      
-      try {
-        const data = event.dataTransfer.getData('application/json')
-        if (data) {
-          const jsonData = JSON.parse(data)
-          handleImportJSON()
-        }
-      } catch (error) {
-        console.error('Drop error:', error)
+  const handleColorChange = (newNodeColor: string, newEdgeColor: string) => {
+    setNodeColor(newNodeColor)
+    setEdgeColor(newEdgeColor)
+    
+    // Update existing nodes
+    setNodes((nds) => nds.map((node) => ({
+      ...node,
+      data: { ...node.data, nodeColor: newNodeColor }
+    })))
+    
+    // Update existing edges
+    setEdges((eds) => eds.map((edge) => ({
+      ...edge,
+      style: { ...edge.style, stroke: newEdgeColor },
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: newEdgeColor,
+        width: 20,
+        height: 20,
       }
-    },
-    []
-  )
+    })))
+    
+    toast.success('Colors updated!')
+  }
 
-  const handleDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault()
-    event.dataTransfer.dropEffect = 'copy'
-  }, [])
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen)
+  }
 
   return (
     <>
-      <DashboardNavbar />
-      <div className="min-h-screen pt-24 pb-8 px-4 bg-background">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+      {!isFullscreen && <DashboardNavbar />}
+      <div className={`min-h-screen bg-background ${isFullscreen ? 'pt-0' : 'pt-24 pb-8'} px-4`}>
+        <div className={isFullscreen ? 'h-screen' : 'max-w-7xl mx-auto'}>
+          <div className={`mb-6 flex items-center justify-between flex-wrap gap-4 ${isFullscreen ? 'pt-4' : ''}`}>
             <div>
               <h1 className="text-3xl font-bold pixel-text mb-2">Workflow Visualizer</h1>
               <p className="text-muted-foreground">Import and visualize your n8n workflows</p>
             </div>
             <div className="flex gap-2 flex-wrap">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                variant="outline"
+                className="gap-2"
+              >
+                <FileUp className="w-4 h-4" />
+                Upload File
+              </Button>
               <Button
                 onClick={() => setShowImport(!showImport)}
                 variant="outline"
                 className="gap-2"
               >
                 <Upload className="w-4 h-4" />
-                Import JSON
+                Paste JSON
               </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <Palette className="w-4 h-4" />
+                    Colors
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Customize Colors</h4>
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="node-color">Node Color</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="node-color"
+                            type="color"
+                            value={nodeColor}
+                            onChange={(e) => setNodeColor(e.target.value)}
+                            className="w-20 h-10"
+                          />
+                          <Input
+                            type="text"
+                            value={nodeColor}
+                            onChange={(e) => setNodeColor(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="edge-color">Line Color</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="edge-color"
+                            type="color"
+                            value={edgeColor}
+                            onChange={(e) => setEdgeColor(e.target.value)}
+                            className="w-20 h-10"
+                          />
+                          <Input
+                            type="text"
+                            value={edgeColor}
+                            onChange={(e) => setEdgeColor(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={() => handleColorChange(nodeColor, edgeColor)}
+                        className="w-full"
+                      >
+                        Apply Colors
+                      </Button>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
               {nodes.length > 0 && (
                 <>
                   <Button
@@ -371,6 +434,14 @@ function WorkflowCanvas() {
                   </Button>
                 </>
               )}
+              <Button
+                onClick={toggleFullscreen}
+                variant="outline"
+                className="gap-2"
+              >
+                {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                {isFullscreen ? 'Exit' : 'Fullscreen'}
+              </Button>
             </div>
           </div>
 
@@ -397,9 +468,7 @@ function WorkflowCanvas() {
 
           <div 
             className="relative bg-card rounded-lg border shadow-lg overflow-hidden" 
-            style={{ height: '700px', width: '100%' }}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
+            style={{ height: isFullscreen ? 'calc(100vh - 140px)' : '700px', width: '100%' }}
           >
             <ReactFlow
               nodes={nodes}
@@ -421,13 +490,13 @@ function WorkflowCanvas() {
               defaultEdgeOptions={{
                 type: 'default',
                 animated: true,
-                style: { strokeWidth: 2.5, stroke: '#6B46C1' },
-                markerEnd: { type: MarkerType.ArrowClosed, color: '#6B46C1' },
+                style: { strokeWidth: 2.5, stroke: edgeColor },
+                markerEnd: { type: MarkerType.ArrowClosed, color: edgeColor },
               }}
             >
               <Controls />
               <MiniMap
-                nodeColor="#6B46C1"
+                nodeColor={nodeColor}
                 maskColor="rgba(0, 0, 0, 0.1)"
                 style={{ background: '#f5f5f5' }}
               />
@@ -439,7 +508,7 @@ function WorkflowCanvas() {
                 <div className="text-center">
                   <Upload className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-semibold mb-2">No workflow loaded</h3>
-                  <p className="text-muted-foreground">Import a JSON workflow to get started</p>
+                  <p className="text-muted-foreground">Upload a file or paste JSON to get started</p>
                 </div>
               </div>
             )}
