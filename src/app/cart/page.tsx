@@ -1,15 +1,11 @@
 "use client"
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, Download } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { useState, useEffect } from 'react'
 import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
+import { Button } from '@/components/ui/button'
+import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react'
+import { toast } from 'sonner'
+import Link from 'next/link'
 
 interface CartItem {
   id: number
@@ -68,18 +64,11 @@ export default function CartPage() {
   return (
     <>
       <DashboardNavbar />
-      <AppleStyleDock />
       <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 pb-24 px-4">
         <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="pixel-text text-4xl mb-8">
-              Shopping <span className="text-primary">Cart</span>
-            </h1>
-          </motion.div>
+          <h1 className="pixel-text text-4xl mb-8">
+            Shopping <span className="text-primary">Cart</span>
+          </h1>
 
           {cartItems.length === 0 ? (
             <motion.div
@@ -88,7 +77,7 @@ export default function CartPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-center py-20"
             >
-              <ShoppingCart className="w-24 h-24 mx-auto mb-6 text-muted-foreground" />
+              <ShoppingBag className="w-24 h-24 mx-auto mb-6 text-muted-foreground" />
               <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
               <p className="text-muted-foreground mb-8">
                 Start adding templates and agents to your cart

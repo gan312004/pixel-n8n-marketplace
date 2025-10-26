@@ -1,18 +1,18 @@
 "use client"
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from '@/lib/auth-client'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
+import { useEffect, useState } from 'react'
 import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
-import { motion } from 'framer-motion'
+import { Button } from '@/components/ui/button'
+import { Package, Bot, ShoppingCart, DollarSign, TrendingUp, Users, Calendar, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { Package, Star, Trophy, Zap, Download, Bot, DollarSign, Briefcase, BarChart, Bell, Users, Lock, ArrowRight } from 'lucide-react'
+import { useSession } from '@/lib/auth-client'
+import { useRouter } from 'next/navigation'
+import { authClient } from '@/lib/auth-client'
+import { toast } from 'sonner'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { AuroraBackground, BentoGrid, BentoGridItem } from '@/components/ui/aurora-bento-grid'
+import { motion } from 'framer-motion'
+import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 export default function DashboardPage() {
   const { data: session, isPending, refetch } = useSession()
@@ -38,13 +38,13 @@ export default function DashboardPage() {
   const statCards = [
     { label: 'Templates', value: '0', icon: Package, color: 'text-primary', href: '/templates' },
     { label: 'Agents', value: '0', icon: Bot, color: 'text-neon-green', href: '/agents' },
-    { label: 'Downloads', value: '0', icon: Download, color: 'text-yellow-500', href: '#' },
+    { label: 'Downloads', value: '0', icon: ShoppingCart, color: 'text-yellow-500', href: '#' },
     { label: 'Spent', value: '$0', icon: DollarSign, color: 'text-blue-500', href: '/pricing' },
   ]
 
   const features = [
     {
-      icon: <Briefcase className="w-10 h-10 text-white" />,
+      icon: <ShoppingCart className="w-10 h-10 text-white" />,
       title: 'Template Management',
       description: 'Organize and manage all your n8n templates in one place.',
       className: 'md:col-span-4',
@@ -53,7 +53,7 @@ export default function DashboardPage() {
       href: '/templates',
     },
     {
-      icon: <BarChart className="w-10 h-10 text-white" />,
+      icon: <TrendingUp className="w-10 h-10 text-white" />,
       title: 'Analytics Dashboard',
       description: 'Track your template usage and performance metrics.',
       className: 'md:col-span-2',
@@ -62,7 +62,7 @@ export default function DashboardPage() {
       href: '/dashboard/analytics',
     },
     {
-      icon: <Bell className="w-10 h-10 text-white" />,
+      icon: <Users className="w-10 h-10 text-white" />,
       title: 'Smart Notifications',
       description: 'Get notified about new templates and updates.',
       className: 'md:col-span-2',
@@ -71,7 +71,7 @@ export default function DashboardPage() {
       href: '/dashboard/notifications',
     },
     {
-      icon: <Users className="w-10 h-10 text-white" />,
+      icon: <Calendar className="w-10 h-10 text-white" />,
       title: 'AI Agents',
       description: 'Access powerful AI agents for automation.',
       className: 'md:col-span-2',
@@ -80,7 +80,7 @@ export default function DashboardPage() {
       href: '/agents',
     },
     {
-      icon: <Lock className="w-10 h-10 text-white" />,
+      icon: <DollarSign className="w-10 h-10 text-white" />,
       title: 'Secure & Private',
       description: 'Your data is protected with enterprise-grade security.',
       className: 'md:col-span-2',
@@ -217,13 +217,13 @@ export default function DashboardPage() {
                   </Button>
                   <Button asChild className="justify-start" variant="outline">
                     <Link href="/agents">
-                      <Star className="w-4 h-4 mr-2" />
+                      <Bot className="w-4 h-4 mr-2" />
                       Explore Agents
                     </Link>
                   </Button>
                   <Button asChild className="justify-start" variant="outline">
                     <Link href="/bundles">
-                      <Trophy className="w-4 h-4 mr-2" />
+                      <ShoppingCart className="w-4 h-4 mr-2" />
                       Check Bundles (Save up to 50%)
                     </Link>
                   </Button>
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                   variant="outline"
                 >
                   <Link href="/agents">
-                    <Star className="w-4 h-4 mr-2" />
+                    <Bot className="w-4 h-4 mr-2" />
                     Explore Agents
                   </Link>
                 </Button>
@@ -266,7 +266,7 @@ export default function DashboardPage() {
                   variant="outline"
                 >
                   <Link href="/pricing">
-                    <Trophy className="w-4 h-4 mr-2" />
+                    <TrendingUp className="w-4 h-4 mr-2" />
                     View Plans
                   </Link>
                 </Button>
@@ -275,7 +275,7 @@ export default function DashboardPage() {
                   className="w-full justify-start smooth-hover hover:scale-105 bg-primary text-white"
                 >
                   <Link href="/bundles">
-                    <Zap className="w-4 h-4 mr-2" />
+                    <ArrowRight className="w-4 h-4 mr-2" />
                     View Bundles
                   </Link>
                 </Button>

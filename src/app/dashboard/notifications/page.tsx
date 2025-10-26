@@ -1,48 +1,14 @@
 "use client"
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from '@/lib/auth-client'
-import { motion } from 'framer-motion'
-import { Bell, CheckCircle, AlertCircle, Info } from 'lucide-react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
+import { Bell, Check, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function NotificationsPage() {
-  const { data: session, isPending } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!isPending && !session?.user) {
-      router.push('/auth')
-    }
-  }, [session, isPending, router])
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
-  if (!session?.user) {
-    return null
-  }
-
-  const notificationTypes = [
-    { label: 'All Notifications', value: '0', icon: Bell, color: 'text-yellow-500' },
-    { label: 'Messages', value: '0', icon: CheckCircle, color: 'text-blue-500' },
-    { label: 'Emails', value: '0', icon: AlertCircle, color: 'text-green-500' },
-    { label: 'Alerts', value: '0', icon: Info, color: 'text-red-500' },
-  ]
-
   return (
     <>
       <DashboardNavbar />
-      <AppleStyleDock />
-      <div className="min-h-screen pt-8 pb-24 px-4 bg-background">
+      <div className="min-h-screen pt-24 px-4 bg-background">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

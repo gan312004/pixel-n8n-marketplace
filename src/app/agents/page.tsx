@@ -1,13 +1,12 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
+import DashboardNavbar from '@/components/DashboardNavbar'
+import { Button } from '@/components/ui/button'
+import { Search, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Bot, Search, Filter, Star, Zap } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
+import { Bot, Star, Zap } from 'lucide-react'
 
 interface Agent {
   id: number
@@ -69,8 +68,7 @@ export default function AgentsPage() {
   return (
     <>
       <DashboardNavbar />
-      <AppleStyleDock />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 pb-24 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div

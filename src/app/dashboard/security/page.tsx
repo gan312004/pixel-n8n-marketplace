@@ -1,48 +1,14 @@
 "use client"
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from '@/lib/auth-client'
-import { motion } from 'framer-motion'
-import { Lock, Shield, Key, AlertTriangle } from 'lucide-react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
+import { Shield, Lock, Key, Smartphone } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function SecurityPage() {
-  const { data: session, isPending } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!isPending && !session?.user) {
-      router.push('/auth')
-    }
-  }, [session, isPending, router])
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
-  if (!session?.user) {
-    return null
-  }
-
-  const securityFeatures = [
-    { label: 'Two-Factor Auth', value: 'Disabled', icon: Key, color: 'text-yellow-500' },
-    { label: 'Data Encryption', value: 'Active', icon: Lock, color: 'text-green-500' },
-    { label: 'Security Score', value: '85%', icon: Shield, color: 'text-blue-500' },
-    { label: 'Alerts', value: '0', icon: AlertTriangle, color: 'text-red-500' },
-  ]
-
   return (
     <>
       <DashboardNavbar />
-      <AppleStyleDock />
-      <div className="min-h-screen pt-8 pb-24 px-4 bg-background">
+      <div className="min-h-screen pt-24 px-4 bg-background">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

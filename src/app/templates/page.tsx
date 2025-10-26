@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Package, Search, Filter, Star, Download } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { useState, useEffect } from 'react'
 import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
+import { Button } from '@/components/ui/button'
+import { Search, Filter, Plus } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { motion } from 'framer-motion'
+import { Package, Star, Download } from 'lucide-react'
 
 interface Template {
   id: number
@@ -63,7 +63,6 @@ export default function TemplatesPage() {
   return (
     <>
       <DashboardNavbar />
-      <AppleStyleDock />
       <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 pb-24 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}

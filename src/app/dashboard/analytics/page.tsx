@@ -1,48 +1,13 @@
 "use client"
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from '@/lib/auth-client'
-import { motion } from 'framer-motion'
-import { BarChart, TrendingUp, Activity, Users } from 'lucide-react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
+import { BarChart3, TrendingUp, Users, DollarSign } from 'lucide-react'
 
 export default function AnalyticsPage() {
-  const { data: session, isPending } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!isPending && !session?.user) {
-      router.push('/auth')
-    }
-  }, [session, isPending, router])
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-
-  if (!session?.user) {
-    return null
-  }
-
-  const metrics = [
-    { label: 'Total Views', value: '0', icon: Activity, color: 'text-blue-500' },
-    { label: 'Active Users', value: '0', icon: Users, color: 'text-green-500' },
-    { label: 'Growth Rate', value: '0%', icon: TrendingUp, color: 'text-purple-500' },
-    { label: 'Conversions', value: '0', icon: BarChart, color: 'text-orange-500' },
-  ]
-
   return (
     <>
       <DashboardNavbar />
-      <AppleStyleDock />
-      <div className="min-h-screen pt-8 pb-24 px-4 bg-background">
+      <div className="min-h-screen pt-24 px-4 bg-background">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -86,7 +51,7 @@ export default function AnalyticsPage() {
           >
             <Card className="bg-card dark:bg-card rounded-lg p-8 pixel-shadow border-border">
               <CardContent className="text-center py-12">
-                <BarChart className="w-16 h-16 mx-auto mb-4 text-primary" />
+                <BarChart3 className="w-16 h-16 mx-auto mb-4 text-primary" />
                 <h3 className="pixel-text text-xl mb-2 text-card-foreground">Coming Soon</h3>
                 <p className="text-muted-foreground">
                   Detailed analytics and insights will be available here soon.

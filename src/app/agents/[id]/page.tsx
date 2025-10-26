@@ -9,7 +9,6 @@ import Link from "next/link"
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 interface Agent {
   id: number
@@ -121,8 +120,7 @@ export default function AgentDetailPage() {
   return (
     <>
       <DashboardNavbar />
-      <AppleStyleDock />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 pb-24 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Back Button */}
           <motion.div

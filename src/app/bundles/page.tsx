@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { Package, Star, Zap, Check, Gift } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import DashboardNavbar from '@/components/DashboardNavbar'
 import { Button } from '@/components/ui/button'
+import { Package, Star, ShoppingCart } from 'lucide-react'
+import { toast } from 'sonner'
+import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import DashboardNavbar from '@/components/DashboardNavbar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 interface Bundle {
   id: number
@@ -46,8 +46,7 @@ export default function BundlesPage() {
   return (
     <>
       <DashboardNavbar />
-      <AppleStyleDock />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 pb-24 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div

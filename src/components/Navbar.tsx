@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Menu, X, User, Settings as SettingsIcon, ShoppingCart, Package, Bot, DollarSign, Gift } from 'lucide-react';
+import { ChevronDown, Menu, X, User, Settings as SettingsIcon, ShoppingCart, Package, Bot, DollarSign, Gift, Workflow } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSession, authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
@@ -89,6 +89,7 @@ export default function Navbar() {
   const navTabs = [
   { title: 'Templates', icon: Package },
   { title: 'Agents', icon: Bot },
+  { title: 'Workflows', icon: Workflow },
   { type: 'separator' as const },
   { title: 'Pricing', icon: DollarSign },
   { title: 'Bundles', icon: Gift }];
@@ -97,8 +98,8 @@ export default function Navbar() {
   const handleTabChange = (index: number | null) => {
     if (index === null) return;
 
-    const routes = ['/templates', '/agents', null, '/pricing', '/bundles'];
-    const route = routes[index >= 2 ? index - 1 : index];
+    const routes = ['/templates', '/agents', '/workflows', null, '/pricing', '/bundles'];
+    const route = routes[index >= 3 ? index - 1 : index];
 
     if (route) {
       router.push(route);
@@ -226,6 +227,14 @@ export default function Navbar() {
 
               <Bot className="w-5 h-5" />
               Agents
+            </Link>
+            <Link
+            href="/workflows"
+            className="flex items-center gap-3 px-3 py-2 smooth-hover hover:text-primary font-medium text-black rounded-lg hover:bg-muted"
+            onClick={() => setIsMenuOpen(false)}>
+
+              <Workflow className="w-5 h-5" />
+              Workflows
             </Link>
             <Link
             href="/pricing"
