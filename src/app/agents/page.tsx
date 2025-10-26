@@ -121,7 +121,7 @@ export default function AgentsPage() {
               transition={{ duration: 0.6, delay: idx * 0.05 }}>
 
                   <Link href={`/agents/${agent.id}`}>
-                    <div className="bg-white rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105 h-full">
+                    <div className="bg-white rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105 !w-full !h-full">
                       <div className="flex items-start gap-4 mb-4">
                         <div className="text-5xl">{getEmoji(agent.type)}</div>
                         <div className="flex-1">
