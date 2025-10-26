@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Upload, Download, Trash2, Zap, Mail, Database, Globe, Code, Settings, Maximize, Minimize, Palette, FileUp } from 'lucide-react'
+import { Upload, Download, Trash2, Zap, Mail, Database, Globe, Code, Settings, Maximize, Minimize, Palette, FileUp, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   Popover,
@@ -56,24 +56,25 @@ function CustomNode({ data }: { data: any }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="relative">
-            {/* Input Handle - Left side */}
+            {/* Input Handle - Left side, free-floating */}
             <Handle 
               type="target" 
               position={Position.Left} 
               id="input"
               style={{ 
                 background: data.nodeColor || '#6B46C1', 
-                width: 12, 
-                height: 12, 
+                width: 10, 
+                height: 10, 
                 border: '2px solid #fff',
-                left: -6,
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                left: -5,
+                borderRadius: '50%',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
               }} 
             />
             
             {/* Node Card */}
             <div 
-              className="bg-white rounded-lg shadow-lg min-w-[180px] max-w-[220px] cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105" 
+              className="bg-white dark:bg-white rounded-lg shadow-lg min-w-[180px] max-w-[220px] cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105" 
               style={{ borderLeft: `4px solid ${data.nodeColor || '#6B46C1'}` }}
             >
               {/* Node Header */}
@@ -92,25 +93,26 @@ function CustomNode({ data }: { data: any }) {
               </div>
             </div>
             
-            {/* Output Handle - Right side */}
+            {/* Output Handle - Right side, free-floating */}
             <Handle 
               type="source" 
               position={Position.Right} 
               id="output"
               style={{ 
                 background: data.nodeColor || '#6B46C1', 
-                width: 12, 
-                height: 12, 
+                width: 10, 
+                height: 10, 
                 border: '2px solid #fff',
-                right: -6,
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                right: -5,
+                borderRadius: '50%',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
               }} 
             />
           </div>
         </TooltipTrigger>
         <TooltipContent 
           side="top" 
-          className="max-w-sm p-4 bg-popover border shadow-xl z-50"
+          className="max-w-sm p-4 bg-popover border shadow-xl z-[100]"
           sideOffset={15}
         >
           <div className="space-y-2">
@@ -122,9 +124,19 @@ function CustomNode({ data }: { data: any }) {
               <div className="font-semibold text-foreground">{data.typeLabel}</div>
               <div className="leading-relaxed">{data.description}</div>
               {data.parameters && Object.keys(data.parameters).length > 0 && (
-                <div className="pt-1 text-[10px] italic">
-                  Parameters: {Object.keys(data.parameters).slice(0, 2).join(', ')}
-                  {Object.keys(data.parameters).length > 2 && ` +${Object.keys(data.parameters).length - 2} more`}
+                <div className="pt-2 mt-2 border-t">
+                  <div className="font-medium text-foreground mb-1">Configuration:</div>
+                  <div className="text-[11px] space-y-0.5">
+                    {Object.entries(data.parameters).slice(0, 3).map(([key, value]: [string, any]) => (
+                      <div key={key} className="flex gap-1">
+                        <span className="font-medium">{key}:</span>
+                        <span className="truncate">{typeof value === 'object' ? JSON.stringify(value).slice(0, 30) : String(value).slice(0, 30)}</span>
+                      </div>
+                    ))}
+                    {Object.keys(data.parameters).length > 3 && (
+                      <div className="italic text-[10px]">+{Object.keys(data.parameters).length - 3} more parameters</div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -250,6 +262,7 @@ function WorkflowCanvas() {
   const [jsonInput, setJsonInput] = useState('')
   const [showImport, setShowImport] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showNavbar, setShowNavbar] = useState(true)
   const [nodeColor, setNodeColor] = useState('#6B46C1')
   const [edgeColor, setEdgeColor] = useState('#6B46C1')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -258,13 +271,13 @@ function WorkflowCanvas() {
     (params: Connection | Edge) => setEdges((eds) => addEdge({
       ...params,
       animated: true,
-      type: 'smoothstep',
-      style: { stroke: edgeColor, strokeWidth: 2.5 },
+      type: 'default', // Changed to 'default' for natural bezier curves like n8n
+      style: { stroke: edgeColor, strokeWidth: 2 },
       markerEnd: {
         type: MarkerType.ArrowClosed,
         color: edgeColor,
-        width: 25,
-        height: 25,
+        width: 20,
+        height: 20,
       },
     }, eds)),
     [setEdges, edgeColor]
@@ -323,17 +336,17 @@ function WorkflowCanvas() {
                       target: String(target.node),
                       sourceHandle: 'output',
                       targetHandle: 'input',
-                      type: 'smoothstep',
+                      type: 'default', // Bezier curves
                       animated: true,
                       style: { 
                         stroke: edgeColor, 
-                        strokeWidth: 2.5 
+                        strokeWidth: 2 
                       },
                       markerEnd: {
                         type: MarkerType.ArrowClosed,
                         color: edgeColor,
-                        width: 25,
-                        height: 25,
+                        width: 20,
+                        height: 20,
                       },
                     })
                   }
@@ -440,12 +453,12 @@ function WorkflowCanvas() {
     
     setEdges((eds) => eds.map((edge) => ({
       ...edge,
-      style: { ...edge.style, stroke: newEdgeColor, strokeWidth: 2.5 },
+      style: { ...edge.style, stroke: newEdgeColor, strokeWidth: 2 },
       markerEnd: {
         type: MarkerType.ArrowClosed,
         color: newEdgeColor,
-        width: 25,
-        height: 25,
+        width: 20,
+        height: 20,
       }
     })))
     
@@ -454,11 +467,20 @@ function WorkflowCanvas() {
 
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen)
+    if (!isFullscreen) {
+      setShowNavbar(false) // Hide navbar when entering fullscreen
+    } else {
+      setShowNavbar(true) // Show navbar when exiting fullscreen
+    }
+  }
+
+  const toggleNavbar = () => {
+    setShowNavbar(!showNavbar)
   }
 
   return (
     <div className={isFullscreen ? 'fixed inset-0 z-50 bg-background' : ''}>
-      {!isFullscreen && <DashboardNavbar />}
+      {(!isFullscreen || showNavbar) && <DashboardNavbar />}
       <div className={`${isFullscreen ? 'h-screen flex flex-col' : 'min-h-screen bg-background pt-24 pb-8 px-4'}`}>
         <div className={isFullscreen ? 'h-full flex flex-col' : 'max-w-7xl mx-auto'}>
           {/* Header */}
@@ -572,6 +594,17 @@ function WorkflowCanvas() {
                   </Button>
                 </>
               )}
+              {isFullscreen && (
+                <Button
+                  onClick={toggleNavbar}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                >
+                  {showNavbar ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showNavbar ? 'Hide Nav' : 'Show Nav'}
+                </Button>
+              )}
               <Button
                 onClick={toggleFullscreen}
                 variant="outline"
@@ -610,7 +643,7 @@ function WorkflowCanvas() {
           <div 
             className={`relative bg-card rounded-lg border shadow-lg overflow-hidden ${isFullscreen ? 'flex-1' : ''}`}
             style={{ 
-              height: isFullscreen ? 'calc(100vh - 80px)' : '700px', 
+              height: isFullscreen ? (showNavbar ? 'calc(100vh - 144px)' : 'calc(100vh - 80px)') : '700px', 
               width: '100%',
               margin: isFullscreen ? '0 24px 24px 24px' : '0'
             }}
@@ -633,14 +666,14 @@ function WorkflowCanvas() {
               zoomOnScroll={true}
               preventScrolling={true}
               defaultEdgeOptions={{
-                type: 'smoothstep',
+                type: 'default', // Free-flowing bezier curves like n8n
                 animated: true,
-                style: { strokeWidth: 2.5, stroke: edgeColor },
+                style: { strokeWidth: 2, stroke: edgeColor },
                 markerEnd: { 
                   type: MarkerType.ArrowClosed, 
                   color: edgeColor,
-                  width: 25,
-                  height: 25
+                  width: 20,
+                  height: 20
                 },
               }}
             >
