@@ -3,11 +3,11 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from '@/lib/auth-client'
-import LeftSidebar from '@/components/LeftSidebar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
 import { motion } from 'framer-motion'
-import { Bell, Mail, MessageSquare, AlertCircle } from 'lucide-react'
+import { Bell, CheckCircle, AlertCircle, Info } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import DashboardNavbar from '@/components/DashboardNavbar'
+import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 export default function NotificationsPage() {
   const { data: session, isPending } = useSession()
@@ -33,16 +33,16 @@ export default function NotificationsPage() {
 
   const notificationTypes = [
     { label: 'All Notifications', value: '0', icon: Bell, color: 'text-yellow-500' },
-    { label: 'Messages', value: '0', icon: MessageSquare, color: 'text-blue-500' },
-    { label: 'Emails', value: '0', icon: Mail, color: 'text-green-500' },
-    { label: 'Alerts', value: '0', icon: AlertCircle, color: 'text-red-500' },
+    { label: 'Messages', value: '0', icon: CheckCircle, color: 'text-blue-500' },
+    { label: 'Emails', value: '0', icon: AlertCircle, color: 'text-green-500' },
+    { label: 'Alerts', value: '0', icon: Info, color: 'text-red-500' },
   ]
 
   return (
     <>
-      <LeftSidebar />
+      <DashboardNavbar />
       <AppleStyleDock />
-      <div className="min-h-screen pt-24 pb-24 px-4 pl-32 bg-background transition-colors duration-300">
+      <div className="min-h-screen pt-8 pb-24 px-4 bg-background">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

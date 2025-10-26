@@ -12,7 +12,7 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import LeftSidebar from '@/components/LeftSidebar'
+import DashboardNavbar from '@/components/DashboardNavbar'
 import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 interface Template {
@@ -121,10 +121,10 @@ export default function TemplateDetail({ templateId }: TemplateDetailProps) {
 
   return (
     <>
-      <LeftSidebar />
+      <DashboardNavbar />
       <AppleStyleDock />
       <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white">
-        <div className="pt-32 pb-24 px-4 pl-32">
+        <div className="pt-24 pb-24 px-4">
           <div className="max-w-7xl mx-auto">
             {/* Back Button */}
             <Link href="/templates">

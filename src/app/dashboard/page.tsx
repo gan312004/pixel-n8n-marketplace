@@ -6,7 +6,7 @@ import { useSession } from '@/lib/auth-client'
 import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import LeftSidebar from '@/components/LeftSidebar'
+import DashboardNavbar from '@/components/DashboardNavbar'
 import { AppleStyleDock } from '@/components/AppleStyleDock'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -104,9 +104,9 @@ export default function DashboardPage() {
 
   return (
     <>
-      <LeftSidebar />
+      <DashboardNavbar />
       <AppleStyleDock />
-      <div className="min-h-screen pt-24 pb-24 px-4 pl-32 bg-background transition-colors duration-300">
+      <div className="min-h-screen pt-8 pb-24 px-4 bg-background transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div

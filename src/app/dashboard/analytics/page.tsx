@@ -3,11 +3,11 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from '@/lib/auth-client'
-import LeftSidebar from '@/components/LeftSidebar'
-import { AppleStyleDock } from '@/components/AppleStyleDock'
 import { motion } from 'framer-motion'
-import { BarChart, TrendingUp, Users, Activity } from 'lucide-react'
+import { BarChart, TrendingUp, Activity, Users } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import DashboardNavbar from '@/components/DashboardNavbar'
+import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 export default function AnalyticsPage() {
   const { data: session, isPending } = useSession()
@@ -40,9 +40,9 @@ export default function AnalyticsPage() {
 
   return (
     <>
-      <LeftSidebar />
+      <DashboardNavbar />
       <AppleStyleDock />
-      <div className="min-h-screen pt-24 pb-24 px-4 pl-32 bg-background transition-colors duration-300">
+      <div className="min-h-screen pt-8 pb-24 px-4 bg-background">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

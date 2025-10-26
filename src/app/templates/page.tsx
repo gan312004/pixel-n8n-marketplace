@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Search, Filter, Package, Star, Download } from 'lucide-react'
+import { Package, Search, Filter, Star, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import Link from 'next/link'
-import LeftSidebar from '@/components/LeftSidebar'
+import DashboardNavbar from '@/components/DashboardNavbar'
 import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 interface Template {
@@ -62,9 +62,9 @@ export default function TemplatesPage() {
 
   return (
     <>
-      <LeftSidebar />
+      <DashboardNavbar />
       <AppleStyleDock />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-32 pb-24 px-4 pl-32">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 pb-24 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <motion.div

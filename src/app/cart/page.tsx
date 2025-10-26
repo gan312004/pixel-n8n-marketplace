@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Trash2, ShoppingCart, ArrowRight, Plus, Minus } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import LeftSidebar from '@/components/LeftSidebar'
+import { Separator } from '@/components/ui/separator'
+import DashboardNavbar from '@/components/DashboardNavbar'
 import { AppleStyleDock } from '@/components/AppleStyleDock'
 
 interface CartItem {
@@ -66,9 +67,9 @@ export default function CartPage() {
 
   return (
     <>
-      <LeftSidebar />
+      <DashboardNavbar />
       <AppleStyleDock />
-      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-32 pb-24 px-4 pl-32">
+      <div className="min-h-screen bg-gradient-to-br from-muted/30 to-white pt-24 pb-24 px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
