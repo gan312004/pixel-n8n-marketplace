@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import DashboardNavbar from '@/components/DashboardNavbar'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Search, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
