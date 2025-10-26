@@ -13,16 +13,158 @@ import ReactFlow, {
   Node,
   BackgroundVariant,
   ReactFlowProvider,
+  Handle,
+  Position,
+  MarkerType,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import DashboardNavbar from '@/components/DashboardNavbar'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Upload, Download, Trash2 } from 'lucide-react'
+import { Upload, Download, Trash2, Zap, Mail, Database, Globe, Code, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 
 const initialNodes: Node[] = []
 const initialEdges: Edge[] = []
+
+// Custom node component that looks like n8n
+function CustomNode({ data }: { data: any }) {
+  const getNodeIcon = (type: string) => {
+    if (type.includes('start')) return <Zap className="w-4 h-4" />
+    if (type.includes('email') || type.includes('gmail')) return <Mail className="w-4 h-4" />
+    if (type.includes('database') || type.includes('postgres') || type.includes('mysql')) return <Database className="w-4 h-4" />
+    if (type.includes('http') || type.includes('webhook')) return <Globe className="w-4 h-4" />
+    if (type.includes('code') || type.includes('function')) return <Code className="w-4 h-4" />
+    return <Settings className="w-4 h-4" />
+  }
+
+  return (
+    <div className="relative">
+      <Handle 
+        type="target" 
+        position={Position.Left} 
+        style={{ 
+          background: '#6B46C1', 
+          width: 10, 
+          height: 10, 
+          border: '2px solid #fff',
+          left: -5 
+        }} 
+      />
+      <div className="bg-white border-2 border-[#6B46C1] rounded-lg shadow-lg min-w-[200px]">
+        {/* Node Header */}
+        <div className="bg-[#6B46C1] text-white px-3 py-2 rounded-t-md flex items-center gap-2">
+          {getNodeIcon(data.type)}
+          <span className="font-semibold text-sm truncate">{data.name}</span>
+        </div>
+        
+        {/* Node Body */}
+        <div className="px-3 py-2 space-y-1">
+          <div className="text-xs font-medium text-gray-600">
+            {data.typeLabel || 'Node'}
+          </div>
+          {data.description && (
+            <div className="text-xs text-gray-500 line-clamp-2">
+              {data.description}
+            </div>
+          )}
+          {data.parameters && Object.keys(data.parameters).length > 0 && (
+            <div className="text-xs text-gray-400 mt-2 pt-2 border-t">
+              {Object.entries(data.parameters).slice(0, 2).map(([key, value]: [string, any]) => (
+                <div key={key} className="truncate">
+                  <span className="font-medium">{key}:</span> {String(value)}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      <Handle 
+        type="source" 
+        position={Position.Right} 
+        style={{ 
+          background: '#6B46C1', 
+          width: 10, 
+          height: 10, 
+          border: '2px solid #fff',
+          right: -5 
+        }} 
+      />
+    </div>
+  )
+}
+
+const nodeTypes = {
+  custom: CustomNode,
+}
+
+// Helper to get readable node type label
+function getNodeTypeLabel(type: string): string {
+  const typeMap: { [key: string]: string } = {
+    'n8n-nodes-base.start': 'Start Trigger',
+    'n8n-nodes-base.httpRequest': 'HTTP Request',
+    'n8n-nodes-base.webhook': 'Webhook',
+    'n8n-nodes-base.set': 'Set Values',
+    'n8n-nodes-base.if': 'Conditional Logic',
+    'n8n-nodes-base.switch': 'Switch',
+    'n8n-nodes-base.code': 'Code Execution',
+    'n8n-nodes-base.function': 'Function',
+    'n8n-nodes-base.emailSend': 'Send Email',
+    'n8n-nodes-base.gmail': 'Gmail',
+    'n8n-nodes-base.postgres': 'PostgreSQL',
+    'n8n-nodes-base.mysql': 'MySQL',
+    'n8n-nodes-base.googleSheets': 'Google Sheets',
+    'n8n-nodes-base.slack': 'Slack',
+    'n8n-nodes-base.discord': 'Discord',
+  }
+  
+  return typeMap[type] || type.split('.').pop()?.replace(/([A-Z])/g, ' $1').trim() || 'Node'
+}
+
+// Helper to get node description from parameters
+function getNodeDescription(node: any): string {
+  const params = node.parameters || {}
+  const type = node.type || ''
+  
+  if (type.includes('start')) {
+    return 'Triggers the workflow execution'
+  }
+  if (type.includes('httpRequest')) {
+    const method = params.method || 'GET'
+    const url = params.url || 'URL not set'
+    return `${method} request to ${url}`
+  }
+  if (type.includes('webhook')) {
+    return `Listens for incoming webhook calls at ${params.path || '/webhook'}`
+  }
+  if (type.includes('set')) {
+    const values = params.values || {}
+    return `Sets ${Object.keys(values).length || 0} field(s)`
+  }
+  if (type.includes('if')) {
+    return `Evaluates condition and routes flow`
+  }
+  if (type.includes('code') || type.includes('function')) {
+    return `Executes custom JavaScript code`
+  }
+  if (type.includes('email') || type.includes('gmail')) {
+    const to = params.toEmail || params.to || 'recipient'
+    return `Sends email to ${to}`
+  }
+  if (type.includes('database') || type.includes('postgres') || type.includes('mysql')) {
+    const operation = params.operation || 'query'
+    return `Performs ${operation} operation`
+  }
+  if (type.includes('googleSheets')) {
+    const operation = params.operation || 'read'
+    return `${operation} Google Sheets data`
+  }
+  if (type.includes('slack')) {
+    return `Sends message to Slack channel`
+  }
+  
+  return 'Processes workflow data'
+}
 
 function WorkflowCanvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
@@ -42,11 +184,13 @@ function WorkflowCanvas() {
       // Parse n8n-style JSON workflow
       if (data.nodes && Array.isArray(data.nodes)) {
         const parsedNodes: Node[] = data.nodes.map((node: any, index: number) => {
-          const nodeId = node.id || node.name || `node-${index}`
+          // n8n uses 'name' as the unique identifier in connections
+          const nodeId = String(node.name || node.id || `node-${index}`)
           const nodeName = node.name || node.type || 'Node'
+          const nodeType = node.type || 'workflow'
           
           // Handle position - n8n uses [x, y] array format
-          let position = { x: 100 + index * 250, y: 100 + (index % 3) * 150 }
+          let position = { x: 100 + index * 300, y: 100 + (index % 3) * 180 }
           if (node.position) {
             if (Array.isArray(node.position) && node.position.length >= 2) {
               position = { x: node.position[0], y: node.position[1] }
@@ -56,50 +200,48 @@ function WorkflowCanvas() {
           }
           
           return {
-            id: String(nodeId),
-            type: 'default',
+            id: nodeId,
+            type: 'custom',
             position,
             data: { 
-              label: (
-                <div className="text-center">
-                  <div className="font-semibold text-sm">{nodeName}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {node.type || 'workflow'}
-                  </div>
-                </div>
-              )
+              name: nodeName,
+              type: nodeType,
+              typeLabel: getNodeTypeLabel(nodeType),
+              description: getNodeDescription(node),
+              parameters: node.parameters || {},
             },
             draggable: true,
-            style: {
-              background: '#fff',
-              border: '2px solid #6B46C1',
-              borderRadius: '8px',
-              padding: '12px 16px',
-              minWidth: 180,
-              fontSize: '14px',
-              fontWeight: '600',
-            }
           }
         })
 
         const parsedEdges: Edge[] = []
         
-        // Parse connections if they exist
+        // Parse connections - n8n uses node names as identifiers
         if (data.connections) {
-          Object.keys(data.connections).forEach((sourceId: string) => {
-            const connections = data.connections[sourceId]
+          Object.keys(data.connections).forEach((sourceName: string) => {
+            const connections = data.connections[sourceName]
             
             if (connections.main && Array.isArray(connections.main)) {
               connections.main.forEach((connArray: any[], outputIndex: number) => {
                 if (Array.isArray(connArray)) {
-                  connArray.forEach((target: any) => {
+                  connArray.forEach((target: any, targetIndex: number) => {
                     if (target && target.node) {
                       parsedEdges.push({
-                        id: `e-${sourceId}-${target.node}-${outputIndex}`,
-                        source: String(sourceId),
+                        id: `e-${sourceName}-${target.node}-${outputIndex}-${targetIndex}`,
+                        source: String(sourceName),
                         target: String(target.node),
+                        type: 'default',
                         animated: true,
-                        style: { stroke: '#6B46C1', strokeWidth: 2 }
+                        style: { 
+                          stroke: '#6B46C1', 
+                          strokeWidth: 2.5 
+                        },
+                        markerEnd: {
+                          type: MarkerType.ArrowClosed,
+                          color: '#6B46C1',
+                          width: 20,
+                          height: 20,
+                        },
                       })
                     }
                   })
@@ -108,6 +250,9 @@ function WorkflowCanvas() {
             }
           })
         }
+
+        console.log('Parsed nodes:', parsedNodes)
+        console.log('Parsed edges:', parsedEdges)
 
         setNodes(parsedNodes)
         setEdges(parsedEdges)
@@ -125,12 +270,12 @@ function WorkflowCanvas() {
 
   const handleExportJSON = () => {
     const workflow = {
-      nodes: nodes.map((node, index) => ({
+      nodes: nodes.map((node) => ({
         id: node.id,
-        name: typeof node.data.label === 'string' ? node.data.label : `Node ${index + 1}`,
-        type: 'workflow',
+        name: node.data.name || node.id,
+        type: node.data.type || 'workflow',
         position: [node.position.x, node.position.y],
-        parameters: {}
+        parameters: node.data.parameters || {}
       })),
       connections: edges.reduce((acc: any, edge) => {
         if (!acc[edge.source]) {
@@ -238,7 +383,7 @@ function WorkflowCanvas() {
               <Textarea
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                placeholder='{"nodes": [{"id": "1", "name": "Start", "type": "n8n-nodes-base.start", "position": [250, 300]}], "connections": {}}'
+                placeholder='{"nodes": [{"name": "Start", "type": "n8n-nodes-base.start", "position": [250, 300], "parameters": {}}], "connections": {}}'
                 className="min-h-[200px] font-mono text-sm mb-4"
               />
               <div className="flex gap-2">
@@ -252,7 +397,7 @@ function WorkflowCanvas() {
 
           <div 
             className="relative bg-card rounded-lg border shadow-lg overflow-hidden" 
-            style={{ height: '600px', width: '100%' }}
+            style={{ height: '700px', width: '100%' }}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
           >
@@ -262,16 +407,23 @@ function WorkflowCanvas() {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
+              nodeTypes={nodeTypes}
               fitView
-              fitViewOptions={{ padding: 0.2 }}
+              fitViewOptions={{ padding: 0.2, maxZoom: 1 }}
               minZoom={0.1}
-              maxZoom={2}
+              maxZoom={1.5}
               nodesDraggable={true}
               nodesConnectable={true}
               elementsSelectable={true}
               panOnDrag={true}
               zoomOnScroll={true}
               preventScrolling={true}
+              defaultEdgeOptions={{
+                type: 'default',
+                animated: true,
+                style: { strokeWidth: 2.5, stroke: '#6B46C1' },
+                markerEnd: { type: MarkerType.ArrowClosed, color: '#6B46C1' },
+              }}
             >
               <Controls />
               <MiniMap
@@ -279,7 +431,7 @@ function WorkflowCanvas() {
                 maskColor="rgba(0, 0, 0, 0.1)"
                 style={{ background: '#f5f5f5' }}
               />
-              <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+              <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#d1d5db" />
             </ReactFlow>
 
             {nodes.length === 0 && !showImport && (
