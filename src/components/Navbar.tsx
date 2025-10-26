@@ -121,7 +121,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 smooth-hover hover:scale-105 flex-shrink-0">
             <div className="w-12 h-12 bg-gradient-to-br from-deep-purple to-black rounded-xl flex items-center justify-center pixel-shadow">
-              <span className="pixel-text !text-[#21530d]" style={{ fontSize: '10px' }}>Auto</span>
+              <span className="pixel-text !text-[#21530d] !w-16 !h-[29px]" style={{ fontSize: '10px' }}>Auto</span>
             </div>
             <span className="pixel-text text-sm hidden sm:block text-black">Mart</span>
           </Link>
