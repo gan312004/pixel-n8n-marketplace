@@ -43,12 +43,12 @@ const initialEdges: Edge[] = []
 // Custom node component with enhanced hover tooltip
 function CustomNode({ data }: { data: any }) {
   const getNodeIcon = (type: string) => {
-    if (type.includes('start')) return <Zap className="w-4 h-4" />
-    if (type.includes('email') || type.includes('gmail')) return <Mail className="w-4 h-4" />
-    if (type.includes('database') || type.includes('postgres') || type.includes('mysql')) return <Database className="w-4 h-4" />
-    if (type.includes('http') || type.includes('webhook')) return <Globe className="w-4 h-4" />
-    if (type.includes('code') || type.includes('function')) return <Code className="w-4 h-4" />
-    return <Settings className="w-4 h-4" />
+    if (type.includes('start')) return <Zap className="w-5 h-5" />
+    if (type.includes('email') || type.includes('gmail')) return <Mail className="w-5 h-5" />
+    if (type.includes('database') || type.includes('postgres') || type.includes('mysql')) return <Database className="w-5 h-5" />
+    if (type.includes('http') || type.includes('webhook')) return <Globe className="w-5 h-5" />
+    if (type.includes('code') || type.includes('function')) return <Code className="w-5 h-5" />
+    return <Settings className="w-5 h-5" />
   }
 
   return (
@@ -56,29 +56,29 @@ function CustomNode({ data }: { data: any }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="relative">
-            {/* Input Handle - Left side, free-floating */}
+            {/* Input Handle - Left side, free-floating, bigger */}
             <Handle 
               type="target" 
               position={Position.Left} 
               id="input"
               style={{ 
                 background: data.nodeColor || '#6B46C1', 
-                width: 12, 
-                height: 12, 
-                border: '2px solid #fff',
-                left: -6,
+                width: 16, 
+                height: 16, 
+                border: '3px solid #fff',
+                left: -8,
                 borderRadius: '50%',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
+                boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
               }} 
             />
             
             {/* Node Card - Bigger size */}
             <div 
-              className="bg-white dark:bg-white rounded-lg shadow-lg min-w-[220px] max-w-[280px] cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105" 
-              style={{ borderLeft: `4px solid ${data.nodeColor || '#6B46C1'}` }}
+              className="bg-white dark:bg-white rounded-lg shadow-lg min-w-[260px] max-w-[320px] cursor-pointer hover:shadow-xl transition-all duration-200 hover:scale-105" 
+              style={{ borderLeft: `5px solid ${data.nodeColor || '#6B46C1'}` }}
             >
               {/* Node Header - Colored */}
-              <div className="px-4 py-3 flex items-center gap-2" style={{ background: data.nodeColor || '#6B46C1' }}>
+              <div className="px-5 py-4 flex items-center gap-3" style={{ background: data.nodeColor || '#6B46C1' }}>
                 <div className="text-white flex-shrink-0">
                   {getNodeIcon(data.type)}
                 </div>
@@ -86,26 +86,26 @@ function CustomNode({ data }: { data: any }) {
               </div>
               
               {/* Node Body - Light mode: black bg + white text, Dark mode: white bg + black text */}
-              <div className="px-4 py-3 bg-black dark:bg-white">
+              <div className="px-5 py-4 bg-black dark:bg-white">
                 <div className="text-xs font-medium text-white dark:text-black">
                   {data.typeLabel || 'Node'}
                 </div>
               </div>
             </div>
             
-            {/* Output Handle - Right side, free-floating */}
+            {/* Output Handle - Right side, free-flowing, bigger */}
             <Handle 
               type="source" 
               position={Position.Right} 
               id="output"
               style={{ 
                 background: data.nodeColor || '#6B46C1', 
-                width: 12, 
-                height: 12, 
-                border: '2px solid #fff',
-                right: -6,
+                width: 16, 
+                height: 16, 
+                border: '3px solid #fff',
+                right: -8,
                 borderRadius: '50%',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
+                boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
               }} 
             />
           </div>
@@ -271,13 +271,13 @@ function WorkflowCanvas() {
     (params: Connection | Edge) => setEdges((eds) => addEdge({
       ...params,
       animated: true,
-      type: 'default', // Changed to 'default' for natural bezier curves like n8n
-      style: { stroke: edgeColor, strokeWidth: 2 },
+      type: 'default', // Free-flowing bezier curves
+      style: { stroke: edgeColor, strokeWidth: 2.5 },
       markerEnd: {
         type: MarkerType.ArrowClosed,
         color: edgeColor,
-        width: 20,
-        height: 20,
+        width: 22,
+        height: 22,
       },
     }, eds)),
     [setEdges, edgeColor]
@@ -291,7 +291,7 @@ function WorkflowCanvas() {
         const nodeType = node.type || 'workflow'
         const nodeInfo = getNodeTypeInfo(nodeType, node.parameters)
         
-        let position = { x: 100 + index * 300, y: 100 + (index % 3) * 180 }
+        let position = { x: 100 + index * 350, y: 100 + (index % 3) * 200 }
         if (node.position) {
           if (Array.isArray(node.position) && node.position.length >= 2) {
             position = { x: node.position[0], y: node.position[1] }
@@ -318,12 +318,12 @@ function WorkflowCanvas() {
 
       const parsedEdges: Edge[] = []
       
-      // Parse connections - enhanced logic
+      // Parse connections - ensure ALL connections are created
       if (data.connections) {
         Object.keys(data.connections).forEach((sourceName: string) => {
           const connections = data.connections[sourceName]
           
-          // Handle main connections
+          // Handle main connections with proper iteration
           if (connections.main && Array.isArray(connections.main)) {
             connections.main.forEach((connArray: any[], outputIndex: number) => {
               if (Array.isArray(connArray)) {
@@ -340,13 +340,13 @@ function WorkflowCanvas() {
                       animated: true,
                       style: { 
                         stroke: edgeColor, 
-                        strokeWidth: 2 
+                        strokeWidth: 2.5 
                       },
                       markerEnd: {
                         type: MarkerType.ArrowClosed,
                         color: edgeColor,
-                        width: 20,
-                        height: 20,
+                        width: 22,
+                        height: 22,
                       },
                     })
                   }
@@ -453,12 +453,12 @@ function WorkflowCanvas() {
     
     setEdges((eds) => eds.map((edge) => ({
       ...edge,
-      style: { ...edge.style, stroke: newEdgeColor, strokeWidth: 2 },
+      style: { ...edge.style, stroke: newEdgeColor, strokeWidth: 2.5 },
       markerEnd: {
         type: MarkerType.ArrowClosed,
         color: newEdgeColor,
-        width: 20,
-        height: 20,
+        width: 22,
+        height: 22,
       }
     })))
     
@@ -666,14 +666,14 @@ function WorkflowCanvas() {
               zoomOnScroll={true}
               preventScrolling={true}
               defaultEdgeOptions={{
-                type: 'default', // Free-flowing bezier curves like n8n
+                type: 'default', // Free-flowing bezier curves
                 animated: true,
-                style: { strokeWidth: 2, stroke: edgeColor },
+                style: { strokeWidth: 2.5, stroke: edgeColor },
                 markerEnd: { 
                   type: MarkerType.ArrowClosed, 
                   color: edgeColor,
-                  width: 20,
-                  height: 20
+                  width: 22,
+                  height: 22
                 },
               }}
             >

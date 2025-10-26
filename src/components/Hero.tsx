@@ -62,8 +62,7 @@ export default function Hero() {
           
           <h1 className="pixel-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight">
             <span className="text-neon-green dark:text-white" style={{ textShadow: '4px 4px 0px rgba(0, 0, 0, 1)' }}>
-              n8n {displayText}
-              <span style={{ opacity: showCursor ? 1 : 0 }}>|</span>
+              n8n <span className="inline-block min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[600px] text-left">{displayText}<span style={{ opacity: showCursor ? 1 : 0 }}>|</span></span>
             </span>
             <br />
             <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-4 block dark:text-primary">
@@ -99,27 +98,28 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* Stats */}
+        {/* Stats - Fixed sizing to prevent layout shifts */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto"
         >
-          {[
-            { icon: Zap, label: 'Templates', value: '150+' },
-            { icon: Bot, label: 'AI Agents', value: '50+' },
-            { icon: ArrowRight, label: 'Happy Users', value: '10K+' },
-          ].map((stat, idx) => (
-            <div
-              key={idx}
-              className="glassmorphic bg-card rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105"
-            >
-              <stat.icon className="w-8 h-8 mx-auto mb-3 text-neon-green" />
-              <div className="pixel-text text-2xl mb-2">{stat.value}</div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
-            </div>
-          ))}
+          <div className="glassmorphic bg-card rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105">
+            <Zap className="w-8 h-8 mx-auto mb-3 text-neon-green" />
+            <div className="pixel-text text-2xl mb-2">150+</div>
+            <div className="text-sm text-muted-foreground">Templates</div>
+          </div>
+          <div className="glassmorphic bg-card rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105">
+            <Bot className="w-8 h-8 mx-auto mb-3 text-neon-green" />
+            <div className="pixel-text text-2xl mb-2">50+</div>
+            <div className="text-sm text-muted-foreground">AI Agents</div>
+          </div>
+          <div className="glassmorphic bg-card rounded-lg p-6 pixel-shadow smooth-hover hover:scale-105">
+            <ArrowRight className="w-8 h-8 mx-auto mb-3 text-neon-green" />
+            <div className="pixel-text text-2xl mb-2">10K+</div>
+            <div className="text-sm text-muted-foreground">Happy Users</div>
+          </div>
         </motion.div>
       </div>
     </section>
