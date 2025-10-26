@@ -186,7 +186,7 @@ export default function Navbar() {
                   
                   <button
                 onClick={handleSignOut}
-                className="px-3 py-2 smooth-hover hover:bg-destructive/10 text-destructive font-medium rounded-lg text-sm">
+                className="px-3 py-2 smooth-hover hover:bg-destructive/10 font-medium rounded-lg text-sm !text-black">
 
                     Logout
                   </button>
